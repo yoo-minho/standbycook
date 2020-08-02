@@ -39,5 +39,5 @@ export default function (props) {
                 {props.todo.todo_contents}
         </li> 
     )
-}
+} 
 
