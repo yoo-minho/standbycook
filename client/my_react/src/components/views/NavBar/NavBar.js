@@ -1,6 +1,6 @@
 import React from 'react'
 import './NavBar.css'
-import { Layout, Menu, Typography, PageHeader, Avatar, Row, Col, Button } from 'antd';
+import { Layout, Menu, Typography, PageHeader, Avatar, Row, Col, Button, Breadcrumb } from 'antd';
 import { Link, withRouter } from 'react-router-dom' 
 import {
   VideoCameraOutlined,
@@ -60,64 +60,24 @@ function NavBar(props) {
       console.log(111);
     }
 
-    return (
-        <Layout style={{ minHeight: '100vh' }}>
-
-          {
-            (localStorage.getItem('showSideYn') === 'Y') &&
-            <Sider theme="light" width="200">
-              <div className="logo" />
-              <Menu
-                defaultSelectedKeys={localStorage.getItem('menuKey') ? localStorage.getItem('menuKey') : '1'}
-                defaultOpenKeys={localStorage.getItem('defaultOpenKeys') ? localStorage.getItem('defaultOpenKeys').split(',') : ''}
-                mode='inline'
-                theme='light'
-              >
-                <Menu.Item key="0" link="/readme" icon={<ReadOutlined />} onClick={menuClick}>READ ME</Menu.Item>
-                <SubMenu key="sub1" icon={<YoutubeFilled />} title="영상업로드서비스" onClick={onClick2}>
-                  <Menu.Item key="1" link="/" onClick={menuClick} title="홈">홈</Menu.Item>
-                  <Menu.Item key="2" link="/subscription" onClick={menuClick}>구독</Menu.Item>
-                  <Menu.Item key="3" link="/video/upload" onClick={menuClick}>업로드</Menu.Item>
-                </SubMenu>
-                <SubMenu key="sub2" icon={<VideoCameraOutlined />} title="영화조회서비스">
-                  <Menu.Item key="4" link="/movie" onClick={menuClick} title="홈">홈</Menu.Item>
-                  <Menu.Item key="5" link="/favorite" onClick={menuClick}>즐겨찾기</Menu.Item>
-                </SubMenu>
-                <SubMenu key="sub3" icon={<VideoCameraOutlined />} title="채팅서비스">
-                  <Menu.Item key="6" link="/chat" onClick={menuClick} title="홈">홈</Menu.Item>
-                </SubMenu>
-                <SubMenu key="sub4" icon={<VideoCameraOutlined />} title="투두서비스">
-                  <Menu.Item key="7" link="/todo" onClick={menuClick} title="홈">홈</Menu.Item>
-                </SubMenu>
-              </Menu>
-            </Sider>
-          }
+    return (           
 
           <Layout className="site-layout">
-
-            <Row>
-              <Col span={18}>
-                <PageHeader
-                  className="site-page-header"
-                  title={headerTitle}
-                  subTitle={headerTitle}
-                />
-              </Col>
-              <Col span={6} className="login-group">
-                <Button key="1" link="/register" className="signin" size={'default'} onClick={signClick}> 회원가입</Button>
-                <Button key="2" link="/login"  className="login" size={'default'} onClick={signClick}>로그인</Button>
-              </Col>
-            </Row>
-
-            <Content style={{ margin: '0 16px' }}>
-              {getContent}
+            <Header style={{ position: 'fixed', zIndex: 1, width: '100%', background:'#5f0080', height:'fit-content', padding:'0px' }}>
+              <div className="logo" />
+              <Menu mode="horizontal" defaultSelectedKeys={['2']} style={{ lineHeight:'42px' }}>
+                <Menu.Item key="1">Recipe Note</Menu.Item>
+                <Menu.Item key="2">Shopping List</Menu.Item>
+                <Menu.Item key="3">Fridge Note</Menu.Item>
+                <Menu.Item key="4">Cook Log</Menu.Item>
+              </Menu>
+            </Header>
+            <Content className="site-layout" style={{ padding: '0 0px', marginTop: 87 }}>
+             {getContent}
             </Content>
-
-            <Footer style={{ textAlign: 'center' }}>Yoo Design ©2020 Created by Yoominho</Footer>
+            <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
 
           </Layout>
-
-        </Layout>
     )
 }
 
