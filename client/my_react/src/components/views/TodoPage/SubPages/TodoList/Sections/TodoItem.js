@@ -37,7 +37,7 @@ export default function (props) {
             onClick={toggleItem} 
             className={todoItemClassName}>
                 {props.todo.todo_contents}
-        </li>
+        </li> 
     )
 }
 
