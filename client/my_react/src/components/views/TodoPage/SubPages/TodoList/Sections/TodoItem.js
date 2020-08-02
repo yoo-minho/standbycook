@@ -29,6 +29,16 @@ export default function (props) {
             //console.log(response.data.res.rows)
         })
 
+        axios.post('/api/todo/changeTodoStatus',variables)
+        .then(response => {
+            //console.log(response.data.res.rows)
+        })
+
+        axios.post('/api/todo/changeTodoStatus',variables)
+        .then(response => {
+            //console.log(response.data.res.rows)
+        })
+
     }
 
     return (
