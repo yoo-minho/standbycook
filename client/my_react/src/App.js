@@ -7,7 +7,7 @@ import {
 
 import Auth from './hoc/auth'
 
-import LandingPage from './components/views/LandingPage/LangingPage'
+import RecipePage from './components/_views/RecipePage/RecipePage'
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
 
         <Switch>
 
-          <Route exact path="/" component={Auth(LandingPage, null)}/>
+          <Route exact path="/" component={Auth(RecipePage, null)}/>
 
         </Switch>
       </div>

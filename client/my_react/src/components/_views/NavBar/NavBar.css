@@ -1,0 +1,22 @@
+.logo {
+    height: 40px;
+    width: 60px;
+    margin: 10px auto 0;
+    background: url(https://res.kurly.com/images/marketkurly/logo/logo_type2_x2.png) no-repeat;
+    background-size: contain;
+}
+
+.login-group{
+    padding: 16px;
+}
+
+.login{
+    float: right;
+}
+
+.signin{
+    float: right; 
+    margin-left: 16px;
+}
+
+

@@ -65,11 +65,11 @@ function NavBar(props) {
           <Layout className="site-layout">
             <Header style={{ position: 'fixed', zIndex: 1, width: '100%', background:'#5f0080', height:'fit-content', padding:'0px' }}>
               <div className="logo" />
-              <Menu mode="horizontal" defaultSelectedKeys={['2']} style={{ lineHeight:'42px' }}>
-                <Menu.Item key="1">Recipe Note</Menu.Item>
-                <Menu.Item key="2">Shopping List</Menu.Item>
-                <Menu.Item key="3">Fridge Note</Menu.Item>
-                <Menu.Item key="4">Cook Log</Menu.Item>
+              <Menu mode="horizontal" defaultSelectedKeys={['2']} style={{ lineHeight:'42px'}}>
+                <Menu.Item key="1">레시피</Menu.Item>
+                <Menu.Item key="2">장보기</Menu.Item>
+                <Menu.Item key="3">냉장고</Menu.Item>
+                <Menu.Item key="4">요리</Menu.Item> 
               </Menu>
             </Header>
             <Content className="site-layout" style={{ padding: '0 0px', marginTop: 87 }}>
