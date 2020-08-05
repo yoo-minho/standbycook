@@ -1,25 +1,34 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './NavBar.css'
-import { Layout, Menu, Typography, PageHeader, Avatar, Row, Col, Button, Breadcrumb } from 'antd';
+import { Layout, Menu, Drawer, Typography, PageHeader, Avatar, Row, Col, Button, Breadcrumb } from 'antd';
+import { MenuOutlined, SearchOutlined } from '@ant-design/icons'
 import { Link, withRouter } from 'react-router-dom' 
 
 function NavBar(props) {
 
-    const { Header, Content, Footer, Sider } = Layout;
+    const [visible, setVisible] = useState(false);
 
-    if(window.location.pathname === '/login' ||  window.location.pathname === '/register'){
-        localStorage.setItem('showSideYn', 'N');
-    } else {
-        localStorage.setItem('showSideYn', 'Y');
-    }
+    const showDrawer = () => {
+      setVisible(true);
+    };
+  
+    const onClose = () => {
+      setVisible(false);
+    };
+
+    const { Header, Content, Footer, Sider } = Layout;
 
     const getContent = props.content;
 
     return (           
-
+      <>
           <Layout className="site-layout">
-            <Header style={{ position: 'fixed', zIndex: 1, width: '100%', background:'#5f0080', height:'fit-content', padding:'0px' }}>
-              <div className="logo" />
+            <Header className="header">
+              <div className="logo">STANDBYCOOK</div>
+              <div className="menu">
+                <div className="menu-icon">🍳</div>
+                <div className="menu-icon" onClick={showDrawer}>🍔</div>
+              </div>
               <Menu mode="horizontal" defaultSelectedKeys={['2']} style={{ lineHeight:'42px'}}>
                 <Menu.Item key="1">Recipe</Menu.Item>
                 <Menu.Item key="2">Shopping</Menu.Item>
@@ -31,9 +40,22 @@ function NavBar(props) {
              {getContent}
             </Content>
             <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
-
           </Layout>
+          <Drawer
+            title="Basic Drawer"
+            placement="right"
+            width = "100%"
+            closable={true}
+            onClose={onClose}
+            visible={visible}
+          >
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+          </Drawer>
+        </>
     )
+
 }
 
 export default withRouter(NavBar)

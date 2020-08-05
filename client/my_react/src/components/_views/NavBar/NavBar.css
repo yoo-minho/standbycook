@@ -1,9 +1,31 @@
+header.header {
+    position: fixed;
+    z-index: 1;
+    width: 100%;
+    background: rgb(255, 255, 255);
+    height: 56px;
+    padding: 0px;
+    line-height: 56px;
+    border-bottom: 1px solid #c4c4c4;
+}
+
 .logo {
-    height: 40px;
-    width: 60px;
-    margin: 10px auto 0;
-    background: url(https://res.kurly.com/images/marketkurly/logo/logo_type2_x2.png) no-repeat;
-    background-size: contain;
+    margin-left: 12px;
+    font-size: 24px;
+    height: 56px;
+    font-family:'Righteous', cursive !important;
+}
+
+.menu {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    font-size: 24px;
+}
+
+.menu-icon {
+    display: inline;
+    padding-right: 8px;
 }
 
 .login-group{
