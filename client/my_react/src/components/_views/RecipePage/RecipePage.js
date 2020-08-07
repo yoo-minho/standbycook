@@ -1,22 +1,43 @@
-import React from 'react'
+import React, { useState} from 'react'
 import NavBar from '../NavBar/NavBar'
-import { Layout, Input, Button, Space, Upload, Popconfirm, Row, Col, Skeleton, Card} from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Layout, Input, Button, Drawer, Tooltip, Space, Upload, Popconfirm, Row, Col, Skeleton, Card} from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import './RecipePage.css'
 
 const { Search } = Input;
 const { Meta } = Card;
 
-function recipePage() {
+function RecipePage() {
+
+    const [visible, setVisible] = useState(false);
+
+    const showDrawer = () => {
+        setVisible(true);
+    };
+    
+    const onClose = () => {
+    setVisible(false);
+    };
+
+
     return (
         <NavBar content={
             <Layout>
-                <Row className="top-bar">
-                    <Col span={24}>
-                        <Search className="search-bar" placeholder="input search text" onSearch={value => console.log(value)} />
-                    </Col>
-                </Row>
-                <Row style={{ marginRight: 15 }}>
+                <Button onClick={showDrawer} className="add-button" shape="circle" icon={<PlusOutlined style={{ color:'#FFFFFF', fontSize:'18px' }}/>} />
+                <Drawer
+                    title="Add Recipe"
+                    placement="bottom"
+                    width = "100%"
+                    height = "100%"
+                    closable={true}
+                    onClose={onClose}
+                    visible={visible}
+                >
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                </Drawer>
+                <Row style={{ marginTop:15, marginRight: 15 }}>
                     <Col span={12}>
                         <Card
                             hoverable
@@ -77,4 +98,4 @@ function recipePage() {
     )
 }
 
-export default recipePage
+export default RecipePage
