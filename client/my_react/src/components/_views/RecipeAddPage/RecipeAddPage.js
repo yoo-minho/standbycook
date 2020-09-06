@@ -2,10 +2,12 @@ import React, { useContext } from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
 import RecipeStepItem from './Sections/RecipeStepItem'
 import GroceryItem from './Sections/GroceryItem'
-import { Drawer, Button, Form, Input, Col, Row } from 'antd';
+import { Typography, Drawer, Button, Form, Input, Col, Row, Divider } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 function RecipeAddPage() {
+
+    const { Text, Link } = Typography;
 
     const {
         DrawVisible, setDrawVisible
@@ -44,16 +46,20 @@ function RecipeAddPage() {
                 <Form form={form} layout="vertical">
 
                     <Row style={{ marginBottom: '10px'}}>
-                        <Col span={6} style={{ lineHeight: '32px'}} >레시피제목</Col>
+                        <Col span={6} style={{ lineHeight: '32px'}} ><Text strong>레시피제목</Text></Col>
                         <Col span={18} ><Input placeholder="20자까지 작성가능합니다." /></Col>
                     </Row>
 
                     <Row style={{ marginBottom: '10px'}}>
-                        <Col span={6} style={{ lineHeight: '32px'}} >레시피설명</Col>
+                        <Col span={6} style={{ lineHeight: '32px'}} ><Text strong>레시피설명</Text></Col>
                         <Col span={18} ><TextArea rows={4} placeholder="100자까지 작성가능합니다." /></Col>
                     </Row>
 
+                    <Divider />
+
                     <GroceryItem/>
+
+                    <Divider />
 
                     <RecipeStepItem/>
 

@@ -9,11 +9,14 @@ function RecipeStore(props) {
     const [CurrentPageInRecipeStep, setCurrentPageInRecipeStep] = useState(0);
     const [TotalPageInRecipeStep, setTotalPageInRecipeStep] = useState(0);
 
+    const [RecipeStep, setRecipeStep] = useState([]);
+
     return (
         <RecipeContext.Provider value={{
             DrawVisible, setDrawVisible,
             CurrentPageInRecipeStep, setCurrentPageInRecipeStep,
-            TotalPageInRecipeStep, setTotalPageInRecipeStep
+            TotalPageInRecipeStep, setTotalPageInRecipeStep,
+            RecipeStep, setRecipeStep
         }}>
             {props.children}
         </RecipeContext.Provider>

@@ -34,6 +34,8 @@ app.use('/api/favorite', require('./routes/favorite'));
 app.use('/api/postgres', require('./routes/postgres'));
 app.use('/api/todo', require('./routes/todo-ps'));
 
+app.use('/api/recipe', require('./routes/recipe'));
+
 const port = 5000;
 
 app.listen(port, () => console.log(`Server Running at port ${port}!`));
