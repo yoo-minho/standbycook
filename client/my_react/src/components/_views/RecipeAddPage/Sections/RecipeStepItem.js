@@ -42,7 +42,7 @@ function RecipeStepItem() {
         setCurrentPageInRecipeStep(TotalPageInRecipeStep-1);
     };
 
-    const onDrop = (files) => {
+    const onDrop = (files, event) => {
 
         let formData = new FormData();
         const config = {
@@ -53,8 +53,9 @@ function RecipeStepItem() {
         Axios.post('/api/recipe/uploadImage', formData, config)
         .then(response => {
                 if(response.data.success){
-                    //setRecipeStep();
-                    //setFilePath(response.data.url);
+                    document.getElementById("add-photo-btn").innerText = "사진 수정";
+                    document.querySelectorAll("#recipe-step-item"+CurrentPageInRecipeStep+" .dropzone")[0]
+                        .innerHTML = `<img src=${response.data.url} alt="recipeImage" style="width:100%;height:100%;object-fit:cover">`    
                 } else {
                     alert('실패');
                 }
@@ -64,15 +65,14 @@ function RecipeStepItem() {
     return (
         <Form.List name="names">
             {(fields, { add, remove }) => {
-                console.log(fields)
                 return (
                     <>
                     <Row style={{ marginBottom: '10px'}}>
                         <Col span={20} style={{ lineHeight: '32px'}} ><Text strong>레시피스텝</Text></Col>
                         <Col span={4} ><Button type="dashed" style={{ width: '100%' }} onClick={() => { addRecipeStep(add); }}><PlusOutlined /></Button></Col>
                     </Row>
-                    {fields.map((field, index) => (CurrentPageInRecipeStep == (index+1) && 
-                        <div key={index} style={{ marginBottom: '10px'}}>
+                    {fields.map((field, index) =>
+                        <div id={"recipe-step-item"+(index+1)} key={index} style={{ marginBottom: '10px', display: (CurrentPageInRecipeStep == (index+1)?'block':'none') }} >
                             <Row style={{ marginBottom: '10px'}}>
                                 <Col span={20} >
                                     <Pagination 
@@ -88,30 +88,32 @@ function RecipeStepItem() {
                                 </Col>
                             </Row>
                             <div>
-                                <Dropzone
+                                <div
+                                    className = "dropzone" 
+                                    style={{ width: '100%', height: '200px', marginBottom:'-1px', border:'1px solid lightgray', 
+                                            display:'flex', alignItems:'center', justifyContent:'center'}}>
+                                </div>
+                                <Dropzone    
                                     style={{ marginBottom: '10px'}}
                                     onDrop={onDrop}
                                     multiple={false}
                                     maxSize={100000000}>
                                     {({getRootProps, getInputProps}) => (
-                                        <div style={{ width: '100%', height: '200px', marginBottom:'10px',  
-                                            border:'1px solid lightgray', display:'flex',
-                                            alignItems:'center', justifyContent:'center'}} {...getRootProps()}>
-                                            <input {...getInputProps()}/>
-                                            <PlusOutlined />
-                                        </div>
+                                        <Row style={{ marginBottom: '10px'}}>
+                                            <Col span={12}>
+                                                <Button size={'large'} style={{width:'100%'}}>
+                                                    <div {...getRootProps()} ><span id="add-photo-btn">사진 등록</span><input {...getInputProps()}/></div>
+                                                </Button>
+                                            </Col>
+                                            <Col span={12}><Button size={'large'} style={{width:'100%'}}>사진 삭제</Button></Col>
+                                        </Row>
                                     )}
                                 </Dropzone>
-                                {/*ThumbnailFilePath &&
-                                    <div>
-                                        <img src={`http://localhost:3000/${ThumbnailFilePath}`} alt="thumbnail"></img>
-                                    </div>*/
-                                }
                                 <Input placeholder="한줄설명" ref={inputRef} style={{ width: '100%', marginBottom:'10px' }} />
                                 <TextArea placeholder="상세설명" ref={textAreaRef} rows={4} style={{ width: '100%' }} />
                             </div>
                         </div>
-                    ))}
+                    )}
                     </>
                 );
             }}
