@@ -52,7 +52,7 @@ function RecipeAddPage() {
 
                     <Row style={{ marginBottom: '10px'}}>
                         <Col span={6} style={{ lineHeight: '32px'}} ><Text strong>레시피설명</Text></Col>
-                        <Col span={18} ><TextArea rows={4} placeholder="100자까지 작성가능합니다." /></Col>
+                        <Col span={18} ><TextArea rows={2} placeholder="100자까지 작성가능합니다." /></Col>
                     </Row>
 
                     <Divider />
@@ -64,6 +64,10 @@ function RecipeAddPage() {
                     <RecipeStepItem/>
 
                 </Form>
+
+                <div style={{ width: '100%', position :'fixed', bottom : '0', left : '0', right : '0', borderTop : '1px solid #f1f2f4', padding :'20px'}}>
+                    <Button style={{ width: '100%'}}>추가</Button>
+                </div>
             </Drawer>
         </>
     )
