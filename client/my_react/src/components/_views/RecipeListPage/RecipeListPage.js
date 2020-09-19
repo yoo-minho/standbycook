@@ -1,9 +1,26 @@
-import React from 'react'
+import React, {useContext} from 'react'
+import { RecipeContext } from '../Store/RecipeStore.js'
 import { Row, Col, Card} from 'antd';
+import axios from 'axios'
 
 const { Meta } = Card;
 
 function RecipeListPage() {
+    
+    const {
+        RecipeList, setRecipeList
+    } = useContext(RecipeContext);
+
+    getList();
+
+    function getList(){
+        axios.post('/api/recipe/getList')
+        .then(response => {
+            console.log(response.data.rows);
+            setRecipeList(response.data.rows);
+        })
+    }
+
     return (
         <Row style={{ marginTop:15, marginRight: 15 }}>
             <Col span={12}>

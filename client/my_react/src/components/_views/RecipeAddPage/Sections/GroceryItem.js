@@ -26,10 +26,10 @@ function GroceryItem() {
                                 </Row>
                                 {fields.map((field, index) => 
                                     <div key={index} style={{ marginBottom: '10px'}}>
-                                        <Row>
-                                            <Col span={8} style={{ paddingRight: '10px'}}><Input placeholder="" /></Col>
-                                            <Col span={6} style={{ paddingRight: '10px'}}><Input placeholder="" /></Col>
-                                            <Col span={6} style={{ paddingRight: '10px'}}><Input placeholder="" /></Col>
+                                        <Row className="recipe-grocery">
+                                            <Col span={8} style={{ paddingRight: '10px'}}><Input className="grocery-name" placeholder="" /></Col>
+                                            <Col span={6} style={{ paddingRight: '10px'}}><Input className="grocery-amount" placeholder="" /></Col>
+                                            <Col span={6} style={{ paddingRight: '10px'}}><Input className="grocery-unit" placeholder="" /></Col>
                                             <Col span={4} ><Button type="dashed" style={{ width: '100%' }} onClick={() => {remove(field.name);}}><MinusOutlined /></Button></Col>
                                         </Row>
                                     </div>  
