@@ -3,8 +3,9 @@ import React, { useState , useContext} from 'react'
 import { Layout} from 'antd';
 
 import NavBar from '../NavBar/NavBar'
-import RecipeAddPage from '../RecipeAddPage/RecipeAddPage'
 import RecipeListPage from '../RecipeListPage/RecipeListPage'
+import RecipeAddPage from '../RecipeAddPage/RecipeAddPage'
+import RecipeDetailPage from '../RecipeDetailPage/RecipeDetailPage'
 
 import RecipeStore from '../Store/RecipeStore'
 
@@ -15,8 +16,9 @@ function RecipePage() {
         <NavBar content={
             <RecipeStore>
                 <Layout>
-                    <RecipeAddPage/>
                     <RecipeListPage/>
+                    <RecipeAddPage/>
+                    <RecipeDetailPage/>
                 </Layout>
             </RecipeStore>
         }></NavBar>

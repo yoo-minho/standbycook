@@ -4,7 +4,11 @@ export const RecipeContext = React.createContext();
 
 function RecipeStore(props) {
 
-    const [DrawVisible, setDrawVisible] = useState(false);
+    const [AddPageVisible, setAddPageVisible] = useState(false);
+    const [DetailPageVisible, setDetailPageVisible] = useState(false);
+    const [RecipeDetailRecipeSrno, setRecipeDetailRecipeSrno] = useState("");
+    const [RecipeDetailData, setRecipeDetailData] = useState({});
+    const [RecipeDetailLoading, setRecipeDetailLoading] = useState(true);
 
     const [CurrentPageInRecipeStep, setCurrentPageInRecipeStep] = useState(0);
     const [TotalPageInRecipeStep, setTotalPageInRecipeStep] = useState(0);
@@ -17,7 +21,11 @@ function RecipeStore(props) {
 
     return (
         <RecipeContext.Provider value={{
-            DrawVisible, setDrawVisible,
+            AddPageVisible, setAddPageVisible,
+            DetailPageVisible, setDetailPageVisible,
+            RecipeDetailRecipeSrno, setRecipeDetailRecipeSrno,
+            RecipeDetailData, setRecipeDetailData,
+            RecipeDetailLoading, setRecipeDetailLoading,
             CurrentPageInRecipeStep, setCurrentPageInRecipeStep,
             TotalPageInRecipeStep, setTotalPageInRecipeStep,
             RecipeStep, setRecipeStep,

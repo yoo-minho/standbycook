@@ -1,0 +1,14 @@
+.site-page-header {
+    border: 1px solid rgb(235, 237, 240);
+  }
+
+.dropzone.recipe-detail {
+    margin-bottom: 10px;
+    display: block;
+}
+
+.header-heart{
+    right: 24px;
+    display: inline-block;
+    position: absolute;
+}

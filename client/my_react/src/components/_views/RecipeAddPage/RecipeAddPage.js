@@ -11,7 +11,7 @@ function RecipeAddPage() {
     const { Text } = Typography;
 
     const {
-        DrawVisible, setDrawVisible,
+        AddPageVisible, setAddPageVisible,
         RecipeList, setRecipeList
     } = useContext(RecipeContext);
 
@@ -20,11 +20,11 @@ function RecipeAddPage() {
     const [form] = Form.useForm();
 
     function showDrawer(){
-        setDrawVisible(true)
+        setAddPageVisible(true)
     }
 
     function closeDrawer(){
-        setDrawVisible(false)
+        setAddPageVisible(false)
     }
 
     function onAdd(){
@@ -56,19 +56,24 @@ function RecipeAddPage() {
             });
         });
 
-        axios.post('/api/recipe/add',recipeData)
+        addRecipe(recipeData);
+
+    }
+
+    function addRecipe(recipeData){
+        axios.post('/api/recipe/addRecipe',recipeData)
         .then(response => {
             closeDrawer();
-            getListItem(response.data.qresTotal.first.rows[0].recipe_srno);
+            getRecipeListBySrno(response.data.qresTotal.first.rows[0].recipe_srno);
             message.success('레시피가 추가되었습니다.');
         })
+    }
 
-        function getListItem(recipeSrno){
-            axios.post('/api/recipe/getListItem',{recipe_srno:recipeSrno})
-            .then(response => {
-                setRecipeList([...response.data.qres1.rows,...RecipeList]);
-            })
-        }
+    function getRecipeListBySrno(recipeSrno){
+        axios.post('/api/recipe/getRecipeListBySrno',{recipe_srno:recipeSrno})
+        .then(response => {
+            setRecipeList([...response.data.qres1.rows,...RecipeList]);
+        })
     }
 
     return (
@@ -87,7 +92,7 @@ function RecipeAddPage() {
                 height = "100%"
                 closable={true}
                 onClose={closeDrawer}
-                visible={DrawVisible}
+                visible={AddPageVisible}
             >
                 <div style={{ marginBottom: '73px'}}>
                     <Form className="recipe-form" form={form} layout="vertical">

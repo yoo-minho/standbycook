@@ -36,3 +36,13 @@
     position: absolute;
     right: 0;
 }
+
+.left-bottom{
+    margin-left: 10px;
+    margin-bottom : 15px;
+}
+
+.right-top{ 
+    margin-top: 10px;
+    margin-right : 10px;
+}

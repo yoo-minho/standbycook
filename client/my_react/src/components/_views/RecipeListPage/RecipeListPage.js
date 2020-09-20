@@ -4,61 +4,48 @@ import { Row, Col, Card} from 'antd';
 import axios from 'axios'
 import { HeartOutlined, FieldTimeOutlined } from '@ant-design/icons';
 import './RecipeListPage.css'
-
-const { Meta } = Card;
+import Comm  from '../Comm/Comm'
 
 function RecipeListPage() {
 
     const {
         RecipeList, setRecipeList,
-        RecipeListLoading, setRecipeListLoading
+        RecipeListLoading, setRecipeListLoading,
+        setDetailPageVisible, 
+        setRecipeDetailRecipeSrno,
+        setRecipeDetailLoading,
     } = useContext(RecipeContext);
 
     useEffect(() => {
-        getList();
+        getRecipeList();
     }, [])
 
-    function getList(){
-        axios.post('/api/recipe/getList')
+    function getRecipeList(){
+        axios.post('/api/recipe/getRecipeList')
         .then(response => {
-            console.log(response.data.qres1.rows);
             setRecipeList(response.data.qres1.rows);
             setTimeout(function(){
                 setRecipeListLoading(false);
             },1000)
         })
     }
-    
-    function coalesce(val, defaultVal){
-        let tmpVal;
-        if(val == null || val == undefined || val == ''){
-            if(defaultVal == null || defaultVal == undefined || defaultVal == ''){
-                tmpVal = '';
-            } else {
-                tmpVal = defaultVal;
-            }
-        } else {
-            tmpVal = val;
-        }
-        return tmpVal;
+
+    const showDetailPage = (recipeSrno) => {
+        setRecipeDetailLoading(true);
+        setDetailPageVisible(true);
+        setRecipeDetailRecipeSrno(recipeSrno);
+        console.log("recipeSrno",recipeSrno)
     }
 
-    
+    let recipeList = (<>{",,,,,,,".split(',').map( (v,i) => <Col span={12} key={i}><div className="left-bottom"><Card style={{width: '100%'}} loading={RecipeListLoading}></Card></div></Col>)}</>)
 
-    let recipeList = (
-        <>
-            {",,,,,,,".split(',').map( item =>
-                <Col span={12}><div style={{ marginLeft: 10, marginBottom : 15 }}><Card style={{ width: '100%'}} loading={RecipeListLoading}></Card></div></Col>
-            )}
-        </>
-    )
     if(!RecipeListLoading) recipeList = RecipeList && RecipeList.map( recipe => 
-        <Col span={12} key={recipe.recipe_srno}>
-            <div style={{ marginLeft: 10, marginBottom : 15 }}>
+        <Col span={12} key={recipe.recipe_srno} >
+            <div className="left-bottom" onClick={() => { showDetailPage(recipe.recipe_srno)}}>
                 <div className="recipe-list-image">
                     <img 
                         className="recipe-image" 
-                        src={coalesce(recipe.url,"upload_files/recipe_images/1600592225726_다운로드.png")} 
+                        src={Comm.coalesce(recipe.url,"upload_files/recipe_images/1600592225726_다운로드.png")} 
                         alt={recipe.title} />
                 </div>
                 <div className="recipe-title" >{recipe.title}</div>
@@ -72,7 +59,7 @@ function RecipeListPage() {
     )
 
     return (
-        <Row style={{ marginTop:10, marginRight: 10 }}>
+        <Row className="right-top">
             {recipeList}
         </Row>
     )

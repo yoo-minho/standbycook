@@ -29,7 +29,7 @@ function json2query(dataJson){
     const tmpTableName = dataJson.tableName;
     const tmpColumns = dataJson.column && dataJson.column.join(',');
     const tmpValues = dataJson.value && dataJson.value.join(',');
-    const tmpWheres = dataJson.where &&  dataJson.where.join(' ');
+    const tmpWheres = dataJson.where && dataJson.where.join(' ');
     if("INSERT" === dataJson.mode ){
         tmpQuery = `INSERT INTO ${tmpTableName} (${tmpColumns}) VALUES (${tmpValues}) RETURNING *;`;
     } else if ( "INSERT-SELECT" === dataJson.mode ){
@@ -37,7 +37,7 @@ function json2query(dataJson){
     } else if ( "SELECT" === dataJson.mode ){
         tmpQuery = `SELECT ${tmpColumns} FROM ${tmpTableName} WHERE 1=1 ${tmpWheres};`;
     } else if ( "SUBQUERY" === dataJson.mode ){
-        tmpQuery = `(SELECT ${tmpColumns} FROM ${tmpTableName} WHERE 1=1 ${tmpWheres} limit 1)`;
+        tmpQuery = `(SELECT ${tmpColumns} FROM ${tmpTableName} WHERE 1=1 ${tmpWheres})`;
     } else {
         //pass
     }
@@ -53,15 +53,38 @@ router.post('/uploadImage', (req, res) => {
     })
 });
 
-router.post('/getListItem', (req, res) => {
+router.post('/getRecipeDetailBySrno', (req, res) => {
 
     const client = new Client(config.postgresqlInfo);
     client.connect();
 
-    const urlDynamic = json2query({tableName : 'recipe_step', mode : 'SUBQUERY', column:["url"], where : ["and recipe_srno = recipe.recipe_srno","and title_url_yn = 'Y'"]});
+    const tDynamic = json2query({mode : 'SUBQUERY', tableName : 'recipe_step', column:["title", "description", "url"], where : ["and recipe_srno = $1","order by sequence"]});
+    const stepsDynamic = json2query({mode : 'SUBQUERY', tableName : tDynamic+' as t', column:["array_to_json(array_agg(row_to_json(t)))"], where : ["and 1=1"]});
+    const sql1 = json2query({ mode : 'SELECT', tableName : 'recipe', column : [stepsDynamic+' as steps', '*'], where : ["and recipe_srno = $1"]})
+    const values1 = [req.body.recipe_srno];
+
+    client.query(sql1, values1, (err1, qres1) => {
+        if(err1){
+            console.log(sql1);
+            console.log(values1);
+            console.log(err1);
+            client.end();
+            return;
+        } 
+        client.end();
+        res.status(200).json({success:true, qres1});
+    });
+});
+
+router.post('/getRecipeListBySrno', (req, res) => {
+
+    const client = new Client(config.postgresqlInfo);
+    client.connect();
+
+    const urlDynamic = json2query({mode : 'SUBQUERY', tableName : 'recipe_step', column:["url"], where : ["and recipe_srno = recipe.recipe_srno","and title_url_yn = 'Y'","limit 1"]});
     const sql1 = json2query({
-        tableName : 'recipe',
         mode : 'SELECT',
+        tableName : 'recipe',  
         column : [urlDynamic, 'recipe_srno', 'recipe_srno', 'title', 'register_id', 'coalesce(min,0) as min', 'coalesce(views,0) as views', 'register_datetime', 'register_id'],
         where : ["and recipe_srno = $1","limit 1"]
     })
@@ -80,15 +103,15 @@ router.post('/getListItem', (req, res) => {
     });
 });
 
-router.post('/getList', (req, res) => {
+router.post('/getRecipeList', (req, res) => {
 
     const client = new Client(config.postgresqlInfo);
     client.connect();
 
-    const urlDynamic = json2query({tableName : 'recipe_step', mode : 'SUBQUERY', column:["url"], where : ["and recipe_srno = recipe.recipe_srno","and title_url_yn = 'Y'"]});
+    const urlDynamic = json2query({mode : 'SUBQUERY', tableName : 'recipe_step', column:["url"], where : ["and recipe_srno = recipe.recipe_srno","and title_url_yn = 'Y'"]});
     const sql1 = json2query({
-        tableName : 'recipe',
         mode : 'SELECT',
+        tableName : 'recipe',
         column : [urlDynamic, 'recipe_srno', 'recipe_srno', 'title', 'register_id', 'coalesce(min,0) as min', 'coalesce(views,0) as views', 'register_datetime', 'register_id'],
         where : ["order by register_datetime desc","limit 20"]
     })
@@ -107,14 +130,14 @@ router.post('/getList', (req, res) => {
     });
 });
 
-router.post('/add', (req, res) => {
+router.post('/addRecipe', (req, res) => {
     
     const client = new Client(config.postgresqlInfo);
     client.connect();
 
     const sql = json2query({
-        tableName : 'recipe',
         mode : 'INSERT',
+        tableName : 'recipe',      
         column : ['recipe_srno', 'title', 'register_datetime', 'register_id', 'description', 'min'],
         value : ["nextval('sq_recipe_srno')", '$1', "to_char(now(), 'yyyymmddhh24miss')", '$2', '$3', '$4']
     })
@@ -132,8 +155,8 @@ router.post('/add', (req, res) => {
     dummy1 += `\n select '' as title, '' as description, '' as url, '' as title_url_yn`;
 
     const sql1 = json2query({
-        tableName : 'recipe_step',
         mode : 'INSERT-SELECT',
+        tableName : 'recipe_step',  
         column : ['recipe_step_srno', 'recipe_srno', 'title', 'description', 'url', 'sequence','title_url_yn'],
         value : ["nextval('sq_recipe_step_srno')", "$1", "dummy.title", "dummy.description", "dummy.url","(ROW_NUMBER() OVER()) as row_num","dummy.title_url_yn"],
         dummy : dummy1,
