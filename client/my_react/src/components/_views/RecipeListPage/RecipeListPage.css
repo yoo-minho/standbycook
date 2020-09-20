@@ -1,0 +1,38 @@
+.recipe-list-image {
+    width: 100%;
+    height: 140px;
+    margin-bottom:-1px;
+    border:1px solid lightgray;
+    display:block;
+    align-items:center;
+    justify-content:center;
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.recipe-list-image .recipe-image {
+    width:100%;
+    height:100%;
+    object-fit:cover
+}
+
+.recipe-title {
+    margin: 10px 0;
+    font-weight: 600;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.recipe-title-icon{
+    display:flex;
+    font-size: 12px;
+    line-height:12px;
+}
+
+.recipe-title-icon .recipe-title-view{
+    position: absolute;
+    right: 0;
+}

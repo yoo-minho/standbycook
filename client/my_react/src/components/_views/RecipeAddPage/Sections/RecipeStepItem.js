@@ -26,7 +26,7 @@ function RecipeStepItem() {
         }
     }
 
-    const handleOk = e => {
+    const handleOk = () => {
         setRecipeStepConfirmVisible(false);
         const myNode = document.querySelectorAll("#recipe-step-item"+CurrentPageInRecipeStep)[0];
         Array.prototype.forEach.call(document.querySelectorAll(".title-image"), function(el, i){
@@ -61,8 +61,8 @@ function RecipeStepItem() {
                     const dropNode = myNode.querySelectorAll(".dropzone")[0];
                     const imgEl = document.createElement("img");
                     imgEl.src = response.data.url;
-                    imgEl.className = "recipeImage";
-                    imgEl.alt = "recipeImage";
+                    imgEl.className = "recipe-image";
+                    imgEl.alt = "recipe-image";
                     dropNode.insertBefore(imgEl, dropNode.firstChild);
                     dropNode.style.display = 'block';
                     myNode.querySelectorAll(".only-add-btn")[0].style.display = 'none';

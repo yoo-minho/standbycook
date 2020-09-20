@@ -10,6 +10,7 @@ function RecipeStore(props) {
     const [TotalPageInRecipeStep, setTotalPageInRecipeStep] = useState(0);
     const [RecipeStepConfirmVisible, setRecipeStepConfirmVisible] = useState(false);
     const [RecipeList, setRecipeList] = useState([]);
+    const [RecipeListLoading, setRecipeListLoading] = useState(true);
 
     const [RecipeStep, setRecipeStep] = useState([]);
     
@@ -21,7 +22,8 @@ function RecipeStore(props) {
             TotalPageInRecipeStep, setTotalPageInRecipeStep,
             RecipeStep, setRecipeStep,
             RecipeStepConfirmVisible, setRecipeStepConfirmVisible,
-            RecipeList, setRecipeList
+            RecipeList, setRecipeList,
+            RecipeListLoading, setRecipeListLoading
         }}>
             {props.children}
         </RecipeContext.Provider>

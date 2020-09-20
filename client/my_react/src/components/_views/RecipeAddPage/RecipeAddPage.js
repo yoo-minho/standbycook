@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
 import RecipeStepItem from './Sections/RecipeStepItem'
 import GroceryItem from './Sections/GroceryItem'
-import { Typography, Drawer, Button, Form, Input, Col, Row, Divider, message } from 'antd';
+import { Typography, Drawer, Button, Form, Input, Col, Row, Divider, message, InputNumber } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import axios from 'axios'
 
@@ -11,7 +11,8 @@ function RecipeAddPage() {
     const { Text } = Typography;
 
     const {
-        DrawVisible, setDrawVisible
+        DrawVisible, setDrawVisible,
+        RecipeList, setRecipeList
     } = useContext(RecipeContext);
 
     const { TextArea } = Input;
@@ -33,6 +34,7 @@ function RecipeAddPage() {
         let recipeData = {
             title : myNode.querySelectorAll(".recipe-title")[0].value,
             description : myNode.querySelectorAll(".recipe-description")[0].value,
+            min : myNode.querySelectorAll(".recipe-min input")[0].value,
             grocerys : [],
             steps : []
         }
@@ -56,10 +58,17 @@ function RecipeAddPage() {
 
         axios.post('/api/recipe/add',recipeData)
         .then(response => {
-            console.log(response.data);
             closeDrawer();
+            getListItem(response.data.qresTotal.first.rows[0].recipe_srno);
             message.success('레시피가 추가되었습니다.');
         })
+
+        function getListItem(recipeSrno){
+            axios.post('/api/recipe/getListItem',{recipe_srno:recipeSrno})
+            .then(response => {
+                setRecipeList([...response.data.qres1.rows,...RecipeList]);
+            })
+        }
     }
 
     return (
@@ -91,6 +100,11 @@ function RecipeAddPage() {
                         <Row style={{ marginBottom: '10px'}}>
                             <Col span={6} style={{ lineHeight: '32px'}} ><Text strong>레시피설명</Text></Col>
                             <Col span={18} ><TextArea className="recipe-description" rows={2} placeholder="100자까지 작성가능합니다." /></Col>
+                        </Row>
+
+                        <Row style={{ marginBottom: '10px'}}>
+                            <Col span={6} style={{ lineHeight: '32px'}} ><Text strong>레시피시간</Text></Col>
+                            <Col span={18} ><InputNumber className="recipe-min" min={5} max={180} step ={1} defaultValue={10} />&nbsp;<span>분</span></Col>
                         </Row>
 
                         <Divider />
