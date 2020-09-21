@@ -130,6 +130,28 @@ router.post('/getRecipeList', (req, res) => {
     });
 });
 
+router.post('/getGroceryList', (req, res) => {
+
+    const client = new Client(config.postgresqlInfo);
+    client.connect();
+
+    const sql1 = json2query({mode : 'SELECT', tableName : 'grocery', column : ['grocery_srno', 'grocery_name', 'grocery_category', "(grocery_unit_name||' ('||grocery_unit_per_gram||'g)') as unit"], where : [""]})
+    const values1 = [];
+
+    client.query(sql1, values1, (err1, qres1) => {
+        if(err1){
+            console.log(sql1);
+            console.log(values1);
+            console.log(err1);
+            client.end();
+            return;
+        } 
+        client.end();
+        res.status(200).json({success:true, qres1});
+    });
+});
+
+
 router.post('/addRecipe', (req, res) => {
     
     const client = new Client(config.postgresqlInfo);

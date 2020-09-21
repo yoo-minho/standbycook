@@ -14,10 +14,12 @@ function RecipeListPage() {
         setDetailPageVisible, 
         setRecipeDetailRecipeSrno,
         setRecipeDetailLoading,
+        setGroceryList
     } = useContext(RecipeContext);
 
     useEffect(() => {
         getRecipeList();
+        getGroceryList();
     }, [])
 
     function getRecipeList(){
@@ -27,6 +29,13 @@ function RecipeListPage() {
             setTimeout(function(){
                 setRecipeListLoading(false);
             },1000)
+        })
+    }
+
+    function getGroceryList(){
+        axios.post('/api/recipe/getGroceryList')
+        .then(response => {
+            setGroceryList(response.data.qres1.rows);
         })
     }
 

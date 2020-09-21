@@ -17,14 +17,15 @@ function NavBar(props) {
     };
 
     const { Header, Content, Footer, Sider } = Layout;
-
+    
+    const { Title, Text } = Typography;
     const getContent = props.content;
 
     return (           
       <>
           <Layout className="site-layout">
             <Header className="header">
-              <div className="logo">STANDBYCOOK</div>
+              <div className="logo"><Text strong>장볼레시피</Text></div>
               <div className="menu">
                 <div className="menu-icon">🍳</div>
                 <div className="menu-icon" onClick={showDrawer}>🍔</div>

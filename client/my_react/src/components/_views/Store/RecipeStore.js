@@ -16,6 +16,8 @@ function RecipeStore(props) {
     const [RecipeList, setRecipeList] = useState([]);
     const [RecipeListLoading, setRecipeListLoading] = useState(true);
 
+    const [GroceryList, setGroceryList] = useState([]);
+
     const [RecipeStep, setRecipeStep] = useState([]);
     
 
@@ -31,7 +33,8 @@ function RecipeStore(props) {
             RecipeStep, setRecipeStep,
             RecipeStepConfirmVisible, setRecipeStepConfirmVisible,
             RecipeList, setRecipeList,
-            RecipeListLoading, setRecipeListLoading
+            RecipeListLoading, setRecipeListLoading,
+            GroceryList, setGroceryList, 
         }}>
             {props.children}
         </RecipeContext.Provider>

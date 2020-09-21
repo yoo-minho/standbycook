@@ -21,16 +21,15 @@ footer.footer {
 }
 
 .logo {
-    margin-left: 12px;
+    margin-left: 24px;
     font-size: 24px;
     height: 56px;
-    font-family: 'Luckiest Guy', cursive !important;
 }
 
 .menu {
     position: absolute;
     top: 0;
-    right: 4px;
+    right: 14px;
     font-size: 24px;
 }
 
