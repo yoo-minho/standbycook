@@ -1,8 +1,8 @@
 import React, {useContext, useEffect, useState} from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
-import { Drawer, Typography, Row, Col, Divider, Button, Pagination, Card} from 'antd';
+import { Drawer, Typography, Row, Col, Divider, Popover, Pagination, Card} from 'antd';
 import axios from 'axios'
-import { ArrowLeftOutlined, HeartOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, HeartOutlined, FieldTimeOutlined } from '@ant-design/icons';
 import Comm  from '../Comm/Comm'
 import './RecipeDetailPage.css'
 
@@ -71,6 +71,24 @@ function RecipeDetailPage() {
         </div>
     )
 
+    let recipeGrocerys = RecipeDetailData.grocerys && RecipeDetailData.grocerys.map((grocery, index) => 
+        <Col span={12} id={"recipe-grocery-item"+(index+1)} className="recipe-grocery" key={index} style={{ marginBottom: '10px' }}>
+            <Text className="grocery-name" strong>{grocery.name}</Text>&nbsp;-&nbsp;
+            <Text className="grocery-amount">{grocery.amount}{grocery.unit}</Text>
+        </Col>            
+    )
+
+    const contentPopover = (
+        <div>
+            <Row style={{ marginBottom: '-10px', lineHeight: '32px'}}><Text strong>레시피설명</Text></Row>
+            <Row style={{ marginBottom: '10px', lineHeight: '32px'}}><Text>{RecipeDetailData.description}</Text></Row>
+            <Row style={{ marginBottom: '-10px', lineHeight: '32px'}}><Text strong>레시피등록아이디</Text></Row>
+            <Row style={{ marginBottom: '10px', lineHeight: '32px'}}><Text>{RecipeDetailData.register_id}</Text></Row>
+            <Row style={{ marginBottom: '-10px', lineHeight: '32px'}}><Text strong>레시피등록일시</Text></Row>
+            <Row style={{ marginBottom: '10px', lineHeight: '32px'}}><Text>{RecipeDetailData.register_datetime}</Text></Row>
+        </div>
+      );
+
     let recipeDetail = (<Row style={{ marginBottom: '10px'}}>
         <Col span={24} ><Card style={{width: '100%'}} loading={RecipeDetailLoading}></Card></Col><Divider />
         <Col span={24} ><Card style={{width: '100%'}} loading={RecipeDetailLoading}></Card></Col><Divider />
@@ -78,20 +96,22 @@ function RecipeDetailPage() {
     </Row>)
     if(!RecipeDetailLoading) recipeDetail = <div style={{ marginBottom: '73px'}}>
         <Row style={{ marginBottom: '10px', lineHeight: '32px'}}>
-            <Col span={6} ><Text strong>레시피제목</Text></Col>
-            <Col span={18} ><Text>{RecipeDetailData.title}</Text></Col>
+            <Col span={18} >
+                <Text strong>{RecipeDetailData.title}</Text>&nbsp;&nbsp;&nbsp;
+                <FieldTimeOutlined />&nbsp;<span>{RecipeDetailData.min}분</span>
+            </Col>
+            <Col span={6} >
+                <Popover placement="bottomRight" title="더보기" content={contentPopover} trigger="click">
+                    <Text secondary style={{ float: 'right', fontSize: '12px'}}>더보기</Text>
+                </Popover>
+            </Col>
         </Row>
+        <Divider />
         <Row style={{ marginBottom: '10px', lineHeight: '32px'}}>
-            <Col span={6} ><Text strong>레시피설명</Text></Col>
-            <Col span={18} ><Text>{RecipeDetailData.description}</Text></Col>
+            <Col span={24}><Text strong>식재료</Text></Col>
         </Row>
-        <Row style={{ marginBottom: '10px', lineHeight: '32px'}}>
-            <Col span={6} ><Text strong>레시피시간</Text></Col>
-            <Col span={18} ><Text>{RecipeDetailData.min}분</Text></Col>
-        </Row>
-        <Row style={{ marginBottom: '10px', lineHeight: '32px'}}>
-            <Col span={6} ><Text strong>레시피등록</Text></Col>
-            <Col span={18} ><Text>{RecipeDetailData.register_id} - {RecipeDetailData.register_datetime}</Text></Col>
+        <Row style={{ marginBottom: '10px'}}>
+            {recipeGrocerys}
         </Row>
         <Divider />
         <Row style={{ marginBottom: '10px', lineHeight: '32px'}}>

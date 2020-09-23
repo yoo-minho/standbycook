@@ -41,9 +41,8 @@ function RecipeAddPage() {
 
         Array.prototype.forEach.call(myNode.querySelectorAll(".recipe-grocery"), function(el, i){
             recipeData.grocerys.push({
-                name : el.querySelectorAll(".grocery-name")[0].value,
-                amount : el.querySelectorAll(".grocery-amount")[0].value,
-                unit : el.querySelectorAll(".grocery-unit")[0].value
+                srno : Number(el.querySelectorAll(".grocery-name")[0].getAttribute('grocery-srno')),
+                amount : Number(el.querySelectorAll(".grocery-amount input")[0].value)
             });
         });
 
@@ -64,7 +63,7 @@ function RecipeAddPage() {
         axios.post('/api/recipe/addRecipe',recipeData)
         .then(response => {
             closeDrawer();
-            getRecipeListBySrno(response.data.qresTotal.first.rows[0].recipe_srno);
+            getRecipeListBySrno(Number(response.data.qresTotal.first.rows[0].recipe_srno));
             message.success('레시피가 추가되었습니다.');
         })
     }

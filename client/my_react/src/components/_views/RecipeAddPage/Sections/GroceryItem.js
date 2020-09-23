@@ -17,7 +17,9 @@ function GroceryItem() {
     function onSelect(index, option) {
         console.log(index);
         console.log(option);
-        document.querySelectorAll(".recipe-grocery [index='"+index+"'] .grocery-unit")[0].textContent = option.unit;
+        const myNode = document.querySelectorAll(".recipe-grocery[index='"+index+"']")[0];
+        myNode.querySelectorAll(".grocery-unit")[0].textContent = option.unit;
+        myNode.querySelectorAll(".grocery-name")[0].setAttribute('grocery-srno', option.key);
     }
 
     let tempArr = [];
@@ -35,7 +37,7 @@ function GroceryItem() {
                             <Col span={4} ><Button type="dashed" style={{ width: '100%' }} onClick={() => {add();}}><PlusOutlined /></Button></Col>
                         </Row>
                         {fields.length > 0 &&
-                            <div className="recipe-grocery" style={{ marginBottom: '10px'}}>
+                            <div style={{ marginBottom: '10px'}}>
                                 <Row style={{ marginBottom: '10px'}}>
                                     <Col span={8} >재료명</Col>
                                     <Col span={6} >수량</Col>
@@ -43,14 +45,15 @@ function GroceryItem() {
                                     <Col span={4} ></Col>
                                 </Row>
                                 {fields.map((field, index) =>                                    
-                                    <Row key={index} index={index} style={{ marginBottom: '10px'}}>
+                                    <Row className="recipe-grocery" key={index} index={index} style={{ marginBottom: '10px'}}>
                                         <Col span={8} style={{ paddingRight: '10px'}}>
                                         <Select
+                                            className="grocery-name"
                                             showSearch
                                             style={{ width: '100%' }}
                                             placeholder="재료명"
                                             optionFilterProp="children"
-                                            onSelect={(key, option) => onSelect(index, option, )}
+                                            onSelect={(key, option) => onSelect(index, option)}
                                         >
                                             {tempArr}
                                         </Select>

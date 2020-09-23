@@ -60,7 +60,10 @@ router.post('/getRecipeDetailBySrno', (req, res) => {
 
     const tDynamic = json2query({mode : 'SUBQUERY', tableName : 'recipe_step', column:["title", "description", "url"], where : ["and recipe_srno = $1","order by sequence"]});
     const stepsDynamic = json2query({mode : 'SUBQUERY', tableName : tDynamic+' as t', column:["array_to_json(array_agg(row_to_json(t)))"], where : ["and 1=1"]});
-    const sql1 = json2query({ mode : 'SELECT', tableName : 'recipe', column : [stepsDynamic+' as steps', '*'], where : ["and recipe_srno = $1"]})
+    const t2Dynamic = json2query({mode : 'SUBQUERY', tableName : 'recipe_link_grocery rlg left outer join grocery gc on gc.grocery_srno = rlg.grocery_srno', 
+                    column:["rlg.grocery_srno as srno", "rlg.grocery_amount as amount","coalesce(gc.grocery_name,'') as name","coalesce(gc.grocery_unit_name,'그램') as unit"], where : ["and recipe_srno = $1"]});
+    const grocerysDynamic = json2query({mode : 'SUBQUERY', tableName : t2Dynamic+' as t2', column:["array_to_json(array_agg(row_to_json(t2)))"], where : ["and 1=1"]});
+    const sql1 = json2query({ mode : 'SELECT', tableName : 'recipe', column : [grocerysDynamic+' as grocerys', stepsDynamic+' as steps', '*'], where : ["and recipe_srno = $1"]})
     const values1 = [req.body.recipe_srno];
 
     client.query(sql1, values1, (err1, qres1) => {
@@ -151,7 +154,6 @@ router.post('/getGroceryList', (req, res) => {
     });
 });
 
-
 router.post('/addRecipe', (req, res) => {
     
     const client = new Client(config.postgresqlInfo);
@@ -185,6 +187,24 @@ router.post('/addRecipe', (req, res) => {
         where : ["and dummy.title != ''"]
     })
 
+    let values2 = [];   
+    let dummy2 = "";
+    req.body.grocerys.forEach(function(item, i){
+        dummy2 += `\n select $${2*i+2}::numeric as srno, $${2*i+3}::numeric as amount union`;
+        values2.push(item.srno);
+        values2.push(item.amount);
+    });   
+    dummy2 += `\n select -1 as srno, -1 as amount`;
+
+    const sql2 = json2query({
+        mode : 'INSERT-SELECT',
+        tableName : 'recipe_link_grocery',  
+        column : ['recipe_srno', 'grocery_srno', 'grocery_amount'],
+        value : ["$1", "dummy.srno", "dummy.amount"],
+        dummy : dummy2,
+        where : ["and dummy.srno != -1"]
+    })
+
     client.query(sql, values, (err, qres) => {
         if(err){
             console.log(sql);
@@ -202,9 +222,19 @@ router.post('/addRecipe', (req, res) => {
                 client.end();
                 return;
             } 
-            client.end();
-            var qresTotal  = {first:qres,second:qres1}
-            res.status(200).json({success:true, qresTotal});
+            values2 = [qres.rows[0].recipe_srno, ...values2];
+            client.query(sql2, values2, (err2, qres2) => {
+                if(err2){
+                    console.log(sql2);
+                    console.log(values2);
+                    console.log(err2);
+                    client.end();
+                    return;
+                } 
+                client.end();
+                var qresTotal  = {first:qres,second:qres1,third:qres2}
+                res.status(200).json({success:true, qresTotal});
+            });
         });
     });
 
