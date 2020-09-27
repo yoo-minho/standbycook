@@ -1,18 +1,19 @@
-import React, { useContext, useRef } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Axios from 'axios'
 import { RecipeContext } from '../../Store/RecipeStore'
 import { Typography, Button, Form, Input, Pagination, Row, Col, Modal, message} from 'antd';
 import './RecipeStepItem.css'
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import TextArea from 'antd/lib/input/TextArea';
-import Dropzone from 'react-dropzone'
+import Dropzone from 'react-dropzone';
 
-function RecipeStepItem() {
+function RecipeStepItem(props) {
 
     const {
         CurrentPageInRecipeStep, setCurrentPageInRecipeStep,
         TotalPageInRecipeStep, setTotalPageInRecipeStep,
         RecipeStepConfirmVisible, setRecipeStepConfirmVisible,
+        AddPageInit, setAddPageInit
     } = useContext(RecipeContext);
 
     const { Text } = Typography;
@@ -94,10 +95,16 @@ function RecipeStepItem() {
         }
     }
 
+    useEffect(() => {
+        setAddPageInit(false);
+        console.log('useEffect ### ' +(AddPageInit))
+    }, [AddPageInit])
+    
     return (
         <>
             <Form.List name="names">
                 {(fields, { add, remove }) => {
+                    console.log('render ### ' +(AddPageInit))
                     return (
                         <>
                         <Row style={{ marginBottom: '10px'}}>

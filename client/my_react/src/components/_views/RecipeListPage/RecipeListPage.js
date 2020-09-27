@@ -14,7 +14,8 @@ function RecipeListPage() {
         setDetailPageVisible, 
         setRecipeDetailRecipeSrno,
         setRecipeDetailLoading,
-        setGroceryList
+        setGroceryList,
+        RecipeListVisible
     } = useContext(RecipeContext);
 
     useEffect(() => {
@@ -47,7 +48,6 @@ function RecipeListPage() {
     }
 
     let recipeList = (<>{",,,,,,,".split(',').map( (v,i) => <Col span={12} key={i}><div className="left-bottom"><Card style={{width: '100%'}} loading={RecipeListLoading}></Card></div></Col>)}</>)
-
     if(!RecipeListLoading) recipeList = RecipeList && RecipeList.map( recipe => 
         <Col span={12} key={recipe.recipe_srno} >
             <div className="left-bottom" onClick={() => { showDetailPage(recipe.recipe_srno)}}>
@@ -68,7 +68,7 @@ function RecipeListPage() {
     )
 
     return (
-        <Row className="right-top">
+        <Row className="right-top" style={{display:(RecipeListVisible?'inherit':'none')}}>
             {recipeList}
         </Row>
     )

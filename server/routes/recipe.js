@@ -162,10 +162,10 @@ router.post('/addRecipe', (req, res) => {
     const sql = json2query({
         mode : 'INSERT',
         tableName : 'recipe',      
-        column : ['recipe_srno', 'title', 'register_datetime', 'register_id', 'description', 'min'],
-        value : ["nextval('sq_recipe_srno')", '$1', "to_char(now(), 'yyyymmddhh24miss')", '$2', '$3', '$4']
+        column : ['recipe_srno', 'title', 'register_datetime', 'register_id', 'description', 'min','serving'],
+        value : ["nextval('sq_recipe_srno')", '$1', "to_char(now(), 'yyyymmddhh24miss')", '$2', '$3', '$4', '$5']
     })
-    const values = [req.body.title, 'dellose', req.body.description, req.body.min];
+    const values = [req.body.title, req.body.user_id, req.body.description, req.body.min, req.body.serving];
 
     let values1 = [];   
     let dummy1 = "";
@@ -238,6 +238,42 @@ router.post('/addRecipe', (req, res) => {
         });
     });
 
+});
+
+router.post('/addCart', (req, res) => {
+
+    const client = new Client(config.postgresqlInfo);
+    client.connect();
+
+    const sql1 = json2query({
+        mode : 'INSERT', 
+        tableName : 'user_link_recipe', 
+        column : [
+            'user_id', 
+            'recipe_srno', 
+            'recipe_amount', 
+            'finish_datetime'
+        ],         
+        value : [
+            "$1", "$2", "$3", 
+            "''"],
+        where : [
+            ""
+        ]
+    })
+    const values1 = [req.body.user_id, req.body.recipe_srno, req.body.recipe_amount];
+
+    client.query(sql1, values1, (err1, qres1) => {
+        if(err1){
+            console.log(sql1);
+            console.log(values1);
+            console.log(err1);
+            client.end();
+            return;
+        } 
+        client.end();
+        res.status(200).json({success:true, qres1});
+    });
 });
 
 module.exports = router; 

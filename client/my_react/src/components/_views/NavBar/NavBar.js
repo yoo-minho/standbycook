@@ -1,25 +1,16 @@
 import React, { useState } from 'react'
+import { withRouter } from 'react-router-dom' 
+import TabItem from './Sections/TabItem'
+import { Layout, Drawer, Typography, Row } from 'antd';
 import './NavBar.css'
-import { Layout, Menu, Drawer, Typography, PageHeader, Avatar, Row, Col, Button, Breadcrumb } from 'antd';
-import { MenuOutlined, SearchOutlined, ProfileOutlined, ShoppingCartOutlined, DatabaseOutlined, ScheduleOutlined } from '@ant-design/icons'
-import { Link, withRouter } from 'react-router-dom' 
 
-function NavBar(props) {
+function NavBar() {
 
     const [visible, setVisible] = useState(false);
-
-    const showDrawer = () => {
-      setVisible(true);
-    };
-  
-    const onClose = () => {
-      setVisible(false);
-    };
-
-    const { Header, Content, Footer, Sider } = Layout;
-    
-    const { Title, Text } = Typography;
-    const getContent = props.content;
+    const showDrawer = () => setVisible(true)
+    const onClose = () => setVisible(false)
+    const { Header, Footer } = Layout;
+    const { Text } = Typography;
 
     return (           
       <>
@@ -31,15 +22,12 @@ function NavBar(props) {
                 <div className="menu-icon" onClick={showDrawer}>🍔</div>
               </div>
             </Header>
-            <Content className="site-layout" style={{ padding: '0 0px', marginTop: 56, marginBottom: 56 }}>
-             {getContent}
-            </Content>
             <Footer className="footer" style={{textAlign:'center'}}>
               <Row gutter={[16, 16]}>
-                <Col span={6}><ProfileOutlined style={{ fontSize: '20px', color: '#FFBC42'}} /><div>Recipe</div></Col>
-                <Col span={6}><ShoppingCartOutlined style={{ fontSize: '20px'}}/><div>Shopping</div></Col>
-                <Col span={6}><DatabaseOutlined style={{ fontSize: '20px'}}/><div>Fridge</div></Col>
-                <Col span={6}><ScheduleOutlined style={{ fontSize: '20px'}}/><div>Cook</div></Col>
+                <TabItem gubun="recipe" selectYn="Y"/>
+                <TabItem gubun="cart"/>
+                <TabItem gubun="cook"/>
+                <TabItem gubun="add"/>
               </Row>
             </Footer >
           </Layout>

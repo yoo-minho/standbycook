@@ -6,9 +6,20 @@
     margin-bottom: 10px;
     display: block;
 }
-
-.header-heart{
-    right: 24px;
-    display: inline-block;
-    position: absolute;
+.recipe-info{
+    display: flex;
+    float: right;
+}
+.recipe-info .recipe-info-item{
+    margin-left: 6px;
+}
+.button-area{
+    width: 100%;
+    position :absolute; 
+    bottom : 0; 
+    left : 0; 
+    right : 0; 
+    border-top : 1px solid #f1f2f4; 
+    padding :20px;
+    background:white;
 }

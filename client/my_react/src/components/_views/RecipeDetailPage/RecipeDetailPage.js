@@ -1,8 +1,8 @@
 import React, {useContext, useEffect, useState} from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
-import { Drawer, Typography, Row, Col, Divider, Popover, Pagination, Card} from 'antd';
+import { Drawer, Typography, Row, Col, Divider, Popover, Pagination, Card, Button, InputNumber, message} from 'antd';
 import axios from 'axios'
-import { ArrowLeftOutlined, HeartOutlined, FieldTimeOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, HeartOutlined, FieldTimeOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import Comm  from '../Comm/Comm'
 import './RecipeDetailPage.css'
 
@@ -25,6 +25,17 @@ function RecipeDetailPage() {
     }
 
     const onClick = () => {}
+
+    const addCart = () => {
+        const myNode = document.querySelectorAll(".recipe-detail-page")[0];
+        axios.post('/api/recipe/addCart',{
+            user_id : 'dellose',
+            recipe_srno : myNode.querySelectorAll("[recipe-srno]")[0].getAttribute('recipe-srno'),
+            recipe_amount : myNode.querySelectorAll(".serving-count input")[0].value
+        }).then(response => {
+            message.success('장볼리스트에 추가되었습니다.');
+        })
+    }
 
     useEffect(() => {
         getRecipeDetailBySrno();
@@ -88,25 +99,33 @@ function RecipeDetailPage() {
             <Row style={{ marginBottom: '10px', lineHeight: '32px'}}><Text>{RecipeDetailData.register_datetime}</Text></Row>
         </div>
       );
-
+    
+    const recipeTitleArea = (
+        <div recipe-srno={RecipeDetailRecipeSrno}>
+            <Row>
+                <Col span={16} >
+                    <ArrowLeftOutlined onClick={onBack}/>&nbsp;&nbsp;&nbsp;
+                    <Text strong>{RecipeDetailData.title}</Text>&nbsp;&nbsp;&nbsp; 
+                </Col>
+                <Col span={8}>
+                    <div className="recipe-info">                
+                        <div className="recipe-info-item"><FieldTimeOutlined />&nbsp;<span>{RecipeDetailData.min}분</span></div>
+                        <div className="recipe-info-item"><Popover placement="bottomRight" title="더보기" content={contentPopover} trigger="click">
+                            <InfoCircleOutlined />
+                        </Popover></div>
+                    </div>
+                    
+                </Col>
+            </Row>
+        </div>
+    )
+    
     let recipeDetail = (<Row style={{ marginBottom: '10px'}}>
         <Col span={24} ><Card style={{width: '100%'}} loading={RecipeDetailLoading}></Card></Col><Divider />
         <Col span={24} ><Card style={{width: '100%'}} loading={RecipeDetailLoading}></Card></Col><Divider />
         <Col span={24} ><Card style={{width: '100%'}} loading={RecipeDetailLoading}></Card></Col>
     </Row>)
     if(!RecipeDetailLoading) recipeDetail = <div style={{ marginBottom: '73px'}}>
-        <Row style={{ marginBottom: '10px', lineHeight: '32px'}}>
-            <Col span={18} >
-                <Text strong>{RecipeDetailData.title}</Text>&nbsp;&nbsp;&nbsp;
-                <FieldTimeOutlined />&nbsp;<span>{RecipeDetailData.min}분</span>
-            </Col>
-            <Col span={6} >
-                <Popover placement="bottomRight" title="더보기" content={contentPopover} trigger="click">
-                    <Text secondary style={{ float: 'right', fontSize: '12px'}}>더보기</Text>
-                </Popover>
-            </Col>
-        </Row>
-        <Divider />
         <Row style={{ marginBottom: '10px', lineHeight: '32px'}}>
             <Col span={24}><Text strong>식재료</Text></Col>
         </Row>
@@ -118,11 +137,21 @@ function RecipeDetailPage() {
             <Col span={24}><Text strong>레시피스텝</Text></Col>
         </Row>
         {recipeStep}
+        <div className="button-area">
+        <Row>
+            <Col span={12}><HeartOutlined style={{fontSize:'20px', marginRight:'12px'}}/>
+                <InputNumber className="serving-count" min={1} max={10} step ={1} defaultValue={2} />&nbsp;&nbsp;
+                <span>인분</span>
+            </Col>
+            <Col span={12}><Button style={{ width: '100%'}} onClick={addCart}>레시피 담기</Button></Col>
+        </Row>
+        </div>
     </div>
 
     return (
             <Drawer
-                title={<><ArrowLeftOutlined onClick={onBack}/>&nbsp;&nbsp;&nbsp;<Text strong>레시피상세</Text><div className="header-heart"><HeartOutlined /></div></>}
+                className="recipe-detail-page"
+                title={<>{recipeTitleArea}</>}
                 placement="right"
                 width = "100%"
                 height = "100%"

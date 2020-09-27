@@ -1,30 +1,35 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
 import RecipeStepItem from './Sections/RecipeStepItem'
 import GroceryItem from './Sections/GroceryItem'
 import { Typography, Drawer, Button, Form, Input, Col, Row, Divider, message, InputNumber } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 import axios from 'axios'
 
 function RecipeAddPage() {
 
-    const { Text } = Typography;
-
     const {
         AddPageVisible, setAddPageVisible,
-        RecipeList, setRecipeList
+        RecipeList, setRecipeList,
+        setRecipeListVisible,
+        setCartListVisible,
+        setCookListVisible 
     } = useContext(RecipeContext);
 
+    const { Text } = Typography;
     const { TextArea } = Input;
+    const closeDrawer = () => setAddPageVisible(false)
 
-    const [form] = Form.useForm();
+    useEffect(() => {
+        init();
+    }, [AddPageVisible])
 
-    function showDrawer(){
-        setAddPageVisible(true)
-    }
-
-    function closeDrawer(){
-        setAddPageVisible(false)
+    function init(){
+        const myNode = document.querySelectorAll(".recipe-form")[0];
+        if(myNode == undefined) return;
+        myNode.querySelectorAll(".recipe-title")[0].value = "";
+        myNode.querySelectorAll(".recipe-description")[0].value = "";
+        myNode.querySelectorAll(".recipe-min input")[0].value = "10";
+        myNode.querySelectorAll(".recipe-serving input")[0].value = "2";
     }
 
     function onAdd(){
@@ -32,9 +37,11 @@ function RecipeAddPage() {
         const myNode = document.querySelectorAll(".recipe-form")[0];
 
         let recipeData = {
+            user_id : 'dellose',
             title : myNode.querySelectorAll(".recipe-title")[0].value,
             description : myNode.querySelectorAll(".recipe-description")[0].value,
             min : myNode.querySelectorAll(".recipe-min input")[0].value,
+            serving : myNode.querySelectorAll(".recipe-serving input")[0].value,
             grocerys : [],
             steps : []
         }
@@ -56,7 +63,6 @@ function RecipeAddPage() {
         });
 
         addRecipe(recipeData);
-
     }
 
     function addRecipe(recipeData){
@@ -72,18 +78,20 @@ function RecipeAddPage() {
         axios.post('/api/recipe/getRecipeListBySrno',{recipe_srno:recipeSrno})
         .then(response => {
             setRecipeList([...response.data.qres1.rows,...RecipeList]);
+
+            setRecipeListVisible(true);
+            setCartListVisible(false);
+            setCookListVisible(false);
+            var elements = document.querySelectorAll('.tab-item')
+            Array.prototype.forEach.call(elements, function(el){
+                el.classList.remove('on');
+            });
+            document.querySelectorAll('.tab-item.recipe')[0].classList.add('on');
         })
     }
 
     return (
         <>
-            <Button 
-                onClick={showDrawer} 
-                className="add-button" 
-                shape="circle" 
-                icon={<PlusOutlined 
-                        style={{ color:'#FFFFFF', fontSize:'18px' }}/>} />
-
             <Drawer
                 title="레시피추가"
                 placement="bottom"
@@ -94,11 +102,10 @@ function RecipeAddPage() {
                 visible={AddPageVisible}
             >
                 <div style={{ marginBottom: '73px'}}>
-                    <Form className="recipe-form" form={form} layout="vertical">
-
+                    <Form className="recipe-form" layout="vertical">
                         <Row style={{ marginBottom: '10px'}}>
                             <Col span={6} style={{ lineHeight: '32px'}} ><Text strong>레시피제목</Text></Col>
-                            <Col span={18} ><Input className="recipe-title" placeholder="20자까지 작성가능합니다." /></Col>
+                            <Col span={18} ><Input className="recipe-title" placeholder="20자까지 작성가능합니다."/></Col>
                         </Row>
 
                         <Row style={{ marginBottom: '10px'}}>
@@ -123,7 +130,6 @@ function RecipeAddPage() {
                             <Button style={{ width: '100%'}} onClick={onAdd}>추가</Button>
                         </div>
                     </Form>
-
                 </div>
             </Drawer>
         </>
