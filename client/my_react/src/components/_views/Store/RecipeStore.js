@@ -11,11 +11,11 @@ function RecipeStore(props) {
     const [AddPageVisible, setAddPageVisible] = useState(false);
     const [DetailPageVisible, setDetailPageVisible] = useState(false);
     const [RecipeStepConfirmVisible, setRecipeStepConfirmVisible] = useState(false);
-    const [AddPageInit, setAddPageInit] = useState(true);
 
     //loading
     const [RecipeDetailLoading, setRecipeDetailLoading] = useState(true);
     const [RecipeListLoading, setRecipeListLoading] = useState(true);
+    const [CardListLoading, setCardListLoading] = useState(true);
 
     //one-data
     const [RecipeDetailRecipeSrno, setRecipeDetailRecipeSrno] = useState("");
@@ -27,10 +27,12 @@ function RecipeStore(props) {
     const [RecipeList, setRecipeList] = useState([]);
     const [GroceryList, setGroceryList] = useState([]);
     const [RecipeStep, setRecipeStep] = useState([]);
+    const [CartRecipeList, setCartRecipeList] = useState([]);
+    const [CartGroceryList, setCartGroceryList] = useState([]);
+    const [CartEtcList, setCartEtcList] = useState([]);
     
     return (
         <RecipeContext.Provider value={{
-            AddPageInit, setAddPageInit,
             RecipeListVisible, setRecipeListVisible,
             CartListVisible, setCartListVisible,
             CookListVisible, setCookListVisible,
@@ -46,6 +48,10 @@ function RecipeStore(props) {
             RecipeList, setRecipeList,
             RecipeListLoading, setRecipeListLoading,
             GroceryList, setGroceryList, 
+            CardListLoading, setCardListLoading,
+            CartRecipeList, setCartRecipeList,
+            CartGroceryList, setCartGroceryList,
+            CartEtcList, setCartEtcList,
         }}>
             {props.children}
         </RecipeContext.Provider>

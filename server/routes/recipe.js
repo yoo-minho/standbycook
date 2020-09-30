@@ -27,17 +27,17 @@ const upload = multer({storage:storage}).single("file");
 function json2query(dataJson){
     let tmpQuery = "";
     const tmpTableName = dataJson.tableName;
-    const tmpColumns = dataJson.column && dataJson.column.join(',');
-    const tmpValues = dataJson.value && dataJson.value.join(',');
-    const tmpWheres = dataJson.where && dataJson.where.join(' ');
+    const tmpColumns = dataJson.column && dataJson.column.join(',\n');
+    const tmpValues = dataJson.value && dataJson.value.join(',\n');
+    const tmpWheres = dataJson.where && dataJson.where.join(' \n');
     if("INSERT" === dataJson.mode ){
-        tmpQuery = `INSERT INTO ${tmpTableName} (${tmpColumns}) VALUES (${tmpValues}) RETURNING *;`;
+        tmpQuery = `INSERT INTO ${tmpTableName} \n(${tmpColumns}) \nVALUES (${tmpValues}) \nRETURNING *;`;
     } else if ( "INSERT-SELECT" === dataJson.mode ){
-        tmpQuery = `INSERT INTO ${tmpTableName} (${tmpColumns}) SELECT ${tmpValues} FROM (${dataJson.dummy}) dummy WHERE 1=1 ${tmpWheres} RETURNING *;`;
+        tmpQuery = `INSERT INTO ${tmpTableName} \n(${tmpColumns}) \nSELECT ${tmpValues} \nFROM (${dataJson.dummy}) dummy \nWHERE 1=1 ${tmpWheres} \nRETURNING *;`;
     } else if ( "SELECT" === dataJson.mode ){
-        tmpQuery = `SELECT ${tmpColumns} FROM ${tmpTableName} WHERE 1=1 ${tmpWheres};`;
+        tmpQuery = `SELECT ${tmpColumns} \nFROM ${tmpTableName} \nWHERE 1=1 ${tmpWheres};`;
     } else if ( "SUBQUERY" === dataJson.mode ){
-        tmpQuery = `(SELECT ${tmpColumns} FROM ${tmpTableName} WHERE 1=1 ${tmpWheres})`;
+        tmpQuery = `(SELECT ${tmpColumns} \nFROM ${tmpTableName} \nWHERE 1=1 ${tmpWheres})`;
     } else {
         //pass
     }
@@ -273,6 +273,81 @@ router.post('/addCart', (req, res) => {
         } 
         client.end();
         res.status(200).json({success:true, qres1});
+    });
+});
+
+router.post('/getCartList', (req, res) => {
+
+    const client = new Client(config.postgresqlInfo);
+    client.connect();
+
+    const ulrDynamic = json2query({
+        mode : 'SUBQUERY', 
+        tableName : 'user_link_recipe', 
+        column:["recipe_srno", "sum(recipe_amount)"], 
+        where : ["and user_id = $1","group by recipe_srno"]
+    });
+    const sql1 = json2query({
+        mode : 'SELECT', 
+        tableName : ulrDynamic + ' as ulr left outer join recipe r on r.recipe_srno = ulr.recipe_srno', 
+        column : [
+            'r.recipe_srno', 
+            'r.title', 
+            'ulr.sum as total_amount', 
+            'round(ulr.sum/coalesce(r.serving,2),2) as multiple'
+        ],         
+        where : [""]
+    })
+    const values1 = [req.body.user_id];
+    client.query(sql1, values1, (err1, qres1) => {
+        qres1.query = sql1;
+        if(err1){
+            console.log(sql1);
+            console.log(values1);
+            console.log(err1);
+            client.end();
+            return;
+        } 
+        const values2 = [];
+        let dummy2 = "";
+        qres1.rows.forEach(function(item, i){
+            dummy2 += `\n select $${2*i+1}::numeric as recipe_srno, $${2*i+2}::numeric as multiple union`;
+            values2.push(item.recipe_srno);
+            values2.push(item.multiple);
+        });   
+        dummy2 += `\n select -1 recipe_srno, -1 multiple`;
+
+        const rsltDynamic = json2query({
+            mode : 'SUBQUERY', 
+            tableName : '('+dummy2+') dummy left outer join recipe_link_grocery rlg on rlg.recipe_srno = dummy.recipe_srno', 
+            column:["rlg.grocery_srno", "sum(rlg.grocery_amount * dummy.multiple)"], 
+            where : ["and coalesce(rlg.grocery_srno,-1) != -1", "group by rlg.grocery_srno"]
+        });
+
+        const sql2 = json2query({
+            mode : 'SELECT', 
+            tableName : rsltDynamic + ' as rslt left outer join grocery g on rslt.grocery_srno = g.grocery_srno', 
+            column : [
+                'g.grocery_srno', 
+                'g.grocery_name', 
+                'g.grocery_unit_name', 
+                'g.grocery_unit_per_gram',
+                'round(rslt.sum,0) sum'
+            ],         
+            where : ["and coalesce(g.grocery_srno,-1) != -1"]
+        })
+        client.query(sql2, values2, (err2, qres2) => {
+            if(err2){
+                console.log(sql2);
+                console.log(values2);
+                console.log(err2);
+                client.end();
+                return;
+            } 
+            client.end();
+            var qresTotal  = {first:qres1,second:qres2}
+            res.status(200).json({success:true, qresTotal});
+        });
     });
 });
 

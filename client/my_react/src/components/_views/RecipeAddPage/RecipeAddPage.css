@@ -1,0 +1,15 @@
+.drawer-form{
+    margin-bottom: 73px
+}
+
+.recipe-add-btn{
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0; 
+    right: 0; 
+    border-top: 1px solid #f1f2f4; 
+    padding: 20px; 
+    background: white
+}
+

@@ -17,3 +17,24 @@ button.add-button{
 .contents-area{
     margin: 56px 0;
 }
+
+.mgb10{
+    margin-bottom: 10px !important
+}
+
+.mgr10 {
+    margin-right : 10px !important
+}
+
+.lh32{
+    line-height: 32px !important
+}
+
+.pdr10{
+    padding-right: 10px !important  
+}
+
+.wd100{
+    width: 100% !important
+}
+
