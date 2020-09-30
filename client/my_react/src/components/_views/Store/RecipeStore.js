@@ -11,6 +11,7 @@ function RecipeStore(props) {
     const [AddPageVisible, setAddPageVisible] = useState(false);
     const [DetailPageVisible, setDetailPageVisible] = useState(false);
     const [RecipeStepConfirmVisible, setRecipeStepConfirmVisible] = useState(false);
+    const [CartModalVisible, setCartModalVisible] = useState(false);
 
     //loading
     const [RecipeDetailLoading, setRecipeDetailLoading] = useState(true);
@@ -30,9 +31,12 @@ function RecipeStore(props) {
     const [CartRecipeList, setCartRecipeList] = useState([]);
     const [CartGroceryList, setCartGroceryList] = useState([]);
     const [CartEtcList, setCartEtcList] = useState([]);
+    const [CartModalData, setCartModalData] = useState({});
     
     return (
         <RecipeContext.Provider value={{
+            CartModalData, setCartModalData,
+            CartModalVisible, setCartModalVisible,
             RecipeListVisible, setRecipeListVisible,
             CartListVisible, setCartListVisible,
             CookListVisible, setCookListVisible,

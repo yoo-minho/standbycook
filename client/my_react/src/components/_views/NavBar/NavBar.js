@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import { withRouter } from 'react-router-dom' 
 import TabItem from './Sections/TabItem'
 import { Layout, Drawer, Typography, Row } from 'antd';
+import { FieldTimeOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
+
+
 import './NavBar.css'
 
 function NavBar() {
@@ -18,8 +21,9 @@ function NavBar() {
             <Header className="header">
               <div className="logo"><Text strong>장볼레시피</Text></div>
               <div className="menu">
-                <div className="menu-icon">🍳</div>
-                <div className="menu-icon" onClick={showDrawer}>🍔</div>
+                <div className="menu-icon"><SearchOutlined /></div> 
+                <div className="menu-icon"><FieldTimeOutlined /></div> 
+                <div className="menu-icon" onClick={showDrawer}><UserOutlined /></div>
               </div>
             </Header>
             <Footer className="footer" style={{textAlign:'center'}}>

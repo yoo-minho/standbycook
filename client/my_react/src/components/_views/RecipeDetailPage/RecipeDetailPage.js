@@ -28,7 +28,7 @@ function RecipeDetailPage() {
 
     const addCart = () => {
         const myNode = document.querySelectorAll(".recipe-detail-page")[0];
-        axios.post('/api/recipe/addCart',{
+        axios.post('/api/recipe/addRecipeInCart',{
             user_id : 'dellose',
             recipe_srno : myNode.querySelectorAll("[recipe-srno]")[0].getAttribute('recipe-srno'),
             recipe_amount : myNode.querySelectorAll(".serving-count input")[0].value

@@ -30,6 +30,16 @@ function json2query(dataJson){
     const tmpColumns = dataJson.column && dataJson.column.join(',\n');
     const tmpValues = dataJson.value && dataJson.value.join(',\n');
     const tmpWheres = dataJson.where && dataJson.where.join(' \n');
+    let tmpColumnAndValues = "";
+    if(dataJson.column && dataJson.value && dataJson.column.length == dataJson.value.length){
+        dataJson.column.forEach(function(v,i){
+            tmpColumnAndValues += '\n' + dataJson.column[i] + ' = ' + dataJson.value[i];
+            tmpColumnAndValues += ((dataJson.column.length-1 == i) ? '' : ',');
+        })
+    } else {
+        //pass
+    }
+
     if("INSERT" === dataJson.mode ){
         tmpQuery = `INSERT INTO ${tmpTableName} \n(${tmpColumns}) \nVALUES (${tmpValues}) \nRETURNING *;`;
     } else if ( "INSERT-SELECT" === dataJson.mode ){
@@ -38,6 +48,8 @@ function json2query(dataJson){
         tmpQuery = `SELECT ${tmpColumns} \nFROM ${tmpTableName} \nWHERE 1=1 ${tmpWheres};`;
     } else if ( "SUBQUERY" === dataJson.mode ){
         tmpQuery = `(SELECT ${tmpColumns} \nFROM ${tmpTableName} \nWHERE 1=1 ${tmpWheres})`;
+    } else if ( "UPDATE" === dataJson.mode ){
+        tmpQuery = `UPDATE ${tmpTableName} \nSET ${tmpColumnAndValues} \nWHERE 1=1 ${tmpWheres}`;
     } else {
         //pass
     }
@@ -240,7 +252,7 @@ router.post('/addRecipe', (req, res) => {
 
 });
 
-router.post('/addCart', (req, res) => {
+router.post('/addRecipeInCart', (req, res) => {
 
     const client = new Client(config.postgresqlInfo);
     client.connect();
@@ -348,6 +360,33 @@ router.post('/getCartList', (req, res) => {
             var qresTotal  = {first:qres1,second:qres2}
             res.status(200).json({success:true, qresTotal});
         });
+    });
+});
+
+router.post('/updateRecipeInCart', (req, res) => {
+
+    const client = new Client(config.postgresqlInfo);
+    client.connect();
+
+    const sql1 = json2query({
+        mode : 'UPDATE', 
+        tableName : 'user_link_recipe', 
+        column : ['recipe_amount'],         
+        value : ["$1"],
+        where : ["and recipe_srno = $2","and user_id = $3"]
+    })
+    const values1 = [req.body.total_amount, req.body.recipe_srno, req.body.user_id];
+
+    client.query(sql1, values1, (err1, qres1) => {
+        if(err1){
+            console.log(sql1);
+            console.log(values1);
+            console.log(err1);
+            client.end();
+            return;
+        } 
+        client.end();
+        res.status(200).json({success:true, qres1});
     });
 });
 

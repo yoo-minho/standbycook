@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Col } from 'antd';
 import { RecipeContext } from '../../Store/RecipeStore'
-import { ProfileOutlined, ShoppingCartOutlined, DatabaseOutlined, ScheduleOutlined, PlusOutlined } from '@ant-design/icons'
+import { FieldTimeOutlined, ProfileOutlined, ShoppingCartOutlined, DatabaseOutlined, ScheduleOutlined, PlusOutlined } from '@ant-design/icons'
 import RecipeAddPage from '../../RecipeAddPage/RecipeAddPage'
 import './TabItem.css'
 
@@ -9,9 +9,9 @@ function TabItem(props) {
 
     const {
         setAddPageVisible,
-        setRecipeListVisible,
-        setCartListVisible,
-        setCookListVisible,
+        RecipeListVisible, setRecipeListVisible,
+        CartListVisible, setCartListVisible,
+        CookListVisible, setCookListVisible,
         setAddPageInit
     } = useContext(RecipeContext);
 
@@ -38,7 +38,7 @@ function TabItem(props) {
     let tabIcon = <></>;
     let tabClassName = ((props.selectYn === "Y") ? "tab-item on" : "tab-item") + " " + props.gubun;
     if(props.gubun === 'recipe'){
-        tabText = "장볼레시피";
+        tabText = "레시피월드";
         tabIcon = <ProfileOutlined className="tab-icon"/>
     } else if(props.gubun === 'cart'){
         tabText = "장볼리스트";
@@ -50,9 +50,12 @@ function TabItem(props) {
         tabText = "요리블로그";
         tabIcon = <ScheduleOutlined className="tab-icon"/>
     } else if(props.gubun === 'add'){
-        tabText = "레시피추가";
+        tabText = (RecipeListVisible ? "레시피추가" : CartListVisible ? "리스트추가" : "글쓰기") ;
         tabIcon = <PlusOutlined className="tab-icon"/>
-    } else {
+    } else if (props.gubun === 'timer'){
+        tabText = "요리타이머";
+        tabIcon = <FieldTimeOutlined className="tab-icon"/>
+    }  else {
         //pass
     }
 
