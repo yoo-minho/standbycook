@@ -11,8 +11,7 @@ function TabItem(props) {
         setAddPageVisible,
         RecipeListVisible, setRecipeListVisible,
         CartListVisible, setCartListVisible,
-        CookListVisible, setCookListVisible,
-        setAddPageInit
+        setCookListVisible,
     } = useContext(RecipeContext);
 
     function showAddPageDrawer(){
@@ -50,7 +49,7 @@ function TabItem(props) {
         tabText = "요리블로그";
         tabIcon = <ScheduleOutlined className="tab-icon"/>
     } else if(props.gubun === 'add'){
-        tabText = (RecipeListVisible ? "레시피추가" : CartListVisible ? "리스트추가" : "글쓰기") ;
+        tabText = (RecipeListVisible ? "레시피추가" : CartListVisible ? "식재료추가" : "글쓰기") ;
         tabIcon = <PlusOutlined className="tab-icon"/>
     } else if (props.gubun === 'timer'){
         tabText = "요리타이머";

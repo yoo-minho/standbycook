@@ -1,54 +1,51 @@
-import React, { useState } from 'react'
-import { withRouter } from 'react-router-dom' 
+import React, { useContext } from 'react'
+import { RecipeContext } from '../Store/RecipeStore.js'
+import { withRouter } from 'react-router-dom'
 import TabItem from './Sections/TabItem'
-import { Layout, Drawer, Typography, Row } from 'antd';
-import { FieldTimeOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
-
-
+import { Layout, Typography, Row } from 'antd';
+import { FieldTimeOutlined, UserOutlined } from '@ant-design/icons';
+import RecipeTimerPage from '../RecipeTimerPage/RecipeTimerPage'
+import MyPage from '../MyPage/MyPage'
 import './NavBar.css'
 
 function NavBar() {
 
-    const [visible, setVisible] = useState(false);
-    const showDrawer = () => setVisible(true)
-    const onClose = () => setVisible(false)
-    const { Header, Footer } = Layout;
-    const { Text } = Typography;
+  const {
+    setMyPageVisible,
+    setTimerPageVisible,
+    TimerList,
+  } = useContext(RecipeContext);
 
-    return (           
-      <>
-          <Layout className="site-layout">
-            <Header className="header">
-              <div className="logo"><Text strong>장볼레시피</Text></div>
-              <div className="menu">
-                <div className="menu-icon"><SearchOutlined /></div> 
-                <div className="menu-icon"><FieldTimeOutlined /></div> 
-                <div className="menu-icon" onClick={showDrawer}><UserOutlined /></div>
-              </div>
-            </Header>
-            <Footer className="footer" style={{textAlign:'center'}}>
-              <Row gutter={[16, 16]}>
-                <TabItem gubun="recipe" selectYn="Y"/>
-                <TabItem gubun="cart"/>
-                <TabItem gubun="cook"/>
-                <TabItem gubun="add"/>
-              </Row>
-            </Footer >
-          </Layout>
-          <Drawer
-            title="My Page"
-            placement="right"
-            width = "100%"
-            closable={true}
-            onClose={onClose}
-            visible={visible}
-          >
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-          </Drawer>
-        </>
-    )
+  const showMyPage = () => setMyPageVisible(true)
+  const showTimerPage = () => setTimerPageVisible(true)
+  const { Header, Footer } = Layout;
+  const { Text } = Typography;
+
+    return (
+    <>
+      <Layout className="site-layout">
+        <Header className="header">
+          <div className="logo"><Text strong>장볼레시피</Text></div>
+          <div className="menu">
+            <div className={TimerList.length > 0 ? "menu-icon timer on" : "menu-icon timer"} onClick={showTimerPage}>
+                <FieldTimeOutlined/>
+            </div>
+            <div className="menu-icon" onClick={showMyPage}><UserOutlined /></div>
+          </div>
+        </Header>
+        <Footer className="footer" style={{ textAlign: 'center' }}>
+          <Row gutter={[16, 16]}>
+            <TabItem gubun="recipe" selectYn="Y" />
+            <TabItem gubun="cart" />
+            <TabItem gubun="cook" />
+            <TabItem gubun="add" />
+          </Row>
+        </Footer >
+      </Layout>
+      <RecipeTimerPage/>
+      <MyPage/>
+    </>
+  )
 
 }
 

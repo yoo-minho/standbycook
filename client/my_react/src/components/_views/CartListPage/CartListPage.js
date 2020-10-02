@@ -1,10 +1,11 @@
 import React, { useContext, useEffect } from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
-import { Collapse, Checkbox, Card, Badge, Row, Col, Modal, InputNumber, message, Form } from 'antd';
+import { Collapse, Checkbox, Card, Badge, Row, Col } from 'antd';
 import axios from 'axios'
 import { EditOutlined, CloseOutlined, ReadOutlined } from '@ant-design/icons';
 import './CartListPage.css'
 import Comm from '../Comm/Comm'
+import CartModal from './Sections/CartModal'
 
 function CartListPage() {
 
@@ -12,13 +13,13 @@ function CartListPage() {
         CartListVisible,
         CartRecipeList, setCartRecipeList,
         CartGroceryList, setCartGroceryList,
-        CartEtcList, setCartEtcList,
         CardListLoading, setCardListLoading,
         setRecipeDetailLoading,
         setDetailPageVisible,
         setRecipeDetailRecipeSrno,
-        CartModalVisible, setCartModalVisible,
-        CartModalData, setCartModalData
+        setCartUpdateModalVisible,
+        setCartDeleteModalVisible,
+        setCartModalData
     } = useContext(RecipeContext);
 
     const { Panel } = Collapse;
@@ -40,44 +41,21 @@ function CartListPage() {
 
     };
 
-    const [modalForm] = Form.useForm();
-
     const showDetailPage = (recipeSrno) => {
         setRecipeDetailLoading(true);
         setDetailPageVisible(true);
         setRecipeDetailRecipeSrno(recipeSrno);
     }
 
-    const handleShowModal = (data) => {
+    const handleShowUpdateModal = (data) => {
         setCartModalData(data);
-        setCartModalVisible(true);
+        setCartUpdateModalVisible(true);
+        setCartDeleteModalVisible(false);
     }
 
-    const handleOk = (e) => {
-        let data = {
-            user_id: 'dellose',
-            recipe_srno: CartModalData.recipe_srno,
-            total_amount: document.querySelectorAll(".cart-modal-number input")[0].value
-        }
-        axios.post('/api/recipe/updateRecipeInCart', data)
-            .then(response => {
-                getCartList('dellose');
-                setCartModalVisible(false);
-                message.success('장볼레시피 수량이 수정되었습니다.');
-            })
-    }
-    const handleCancel = () => {
-        setCartModalVisible(false)
-        modalForm.resetFields();
-    }
-
-    const onModalInputChange = (num) => {
-        console.log(CartModalData)
-        setCartModalData({
-            recipe_srno:CartModalData.recipe_srno,
-            title:CartModalData.title,
-            total_amount:num
-        })
+    const handleShowDeleteModal = () => {
+        setCartUpdateModalVisible(false);
+        setCartDeleteModalVisible(true);
     }
 
     let cartRecipeList = <><Card className="wd100" loading={CardListLoading}></Card></>
@@ -96,8 +74,8 @@ function CartListPage() {
                         </div>
                     </Col>
                     <Col span={2} style={{ textAlign: 'center' }} onClick={() => { showDetailPage(cartRecipe.recipe_srno) }}><ReadOutlined /></Col>
-                    <Col span={2} style={{ textAlign: 'center' }} onClick={() => { handleShowModal(cartRecipe) }}><EditOutlined /></Col>
-                    <Col span={2} style={{ textAlign: 'center' }}><CloseOutlined /></Col>
+                    <Col span={2} style={{ textAlign: 'center' }} onClick={() => { handleShowUpdateModal(cartRecipe) }}><EditOutlined /></Col>
+                    <Col span={2} style={{ textAlign: 'center' }} onClick={handleShowDeleteModal}><CloseOutlined /></Col>
                 </Row>
             </div>
         )
@@ -114,9 +92,7 @@ function CartListPage() {
                         <span>{Comm.coalesce(cartGrocery.grocery_unit_name, 'g')}</span>
                         <span>{Comm.coalesce(cartGrocery.grocery_unit_per_gram, '')}</span>
                     </Col>
-                    <Col span={2} style={{ textAlign: 'center' }}><ReadOutlined /></Col>
-                    <Col span={2} style={{ textAlign: 'center' }}><EditOutlined /></Col>
-                    <Col span={2} style={{ textAlign: 'center' }}><CloseOutlined /></Col>
+                    <Col span={6} style={{ textAlign: 'center' }}></Col>
                 </Row>
             </div>
         )
@@ -141,31 +117,8 @@ function CartListPage() {
                 >
                     {cartGroceryList}
                 </Panel>
-                <Panel header="추가/제외 식재료" key="3"><p>123</p></Panel>
             </Collapse>
-            <Modal
-                title="장볼레시피 수정하기 (인분)"
-                visible={CartModalVisible}
-                okText="수정하기"
-                cancelText="취소하기"
-                onOk={handleOk}
-                onCancel={handleCancel}
-            >
-                <Form form={modalForm}>
-                    <Form.Item name="modal-num" className="mgb10">
-                        <Row recipe-srno={CartModalData.recipe_srno}>
-                            <Col span="12" className="lh32">{CartModalData.title}</Col>
-                            <Col span="6">
-                                <InputNumber className="cart-modal-number wd100"
-                                    min={1} max={10} step={1}
-                                    value={CartModalData.total_amount} 
-                                    onChange={onModalInputChange}/>
-                            </Col>
-                            <Col span="6" className="lh32">&nbsp;&nbsp;인분</Col>
-                        </Row>
-                    </Form.Item>
-                </Form>
-            </Modal>
+            <CartModal/>
         </div>
     )
 }

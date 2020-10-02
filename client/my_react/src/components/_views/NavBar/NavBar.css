@@ -52,4 +52,6 @@ footer.footer {
     margin-left: 16px;
 }
 
-
+.timer.on{
+    color:#52c41a;
+}

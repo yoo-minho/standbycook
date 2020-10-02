@@ -44,7 +44,6 @@ function RecipeListPage() {
         setRecipeDetailLoading(true);
         setDetailPageVisible(true);
         setRecipeDetailRecipeSrno(recipeSrno);
-        console.log("recipeSrno",recipeSrno)
     }
 
     let recipeList = (<>{",,,,,,,".split(',').map( (v,i) => <Col span={12} key={i}><div className="left-bottom"><Card style={{width: '100%'}} loading={RecipeListLoading}></Card></div></Col>)}</>)
@@ -61,7 +60,7 @@ function RecipeListPage() {
                 <div className="recipe-title-icon">
                     <div><HeartOutlined />&nbsp;<span>345</span></div>&nbsp;&nbsp;
                     <div><FieldTimeOutlined />&nbsp;<span>{recipe.min}분</span></div>
-                    <div className="recipe-title-view"><span>987</span>&nbsp;<span>views</span></div>
+                    <div className="recipe-title-view"><span>987</span>&nbsp;<span>cooks</span></div>
                 </div>
             </div>
         </Col>

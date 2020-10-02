@@ -157,6 +157,7 @@ function RecipeDetailPage() {
                 height = "100%"
                 closable={false}
                 visible={DetailPageVisible}
+                style={{zIndex:'999'}}
             >
                 {recipeDetail}
             </Drawer>
