@@ -1,8 +1,7 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import Axios from 'axios'
 import { RecipeContext } from '../../Store/RecipeStore'
 import { Typography, Button, Form, Input, Pagination, Row, Col, Modal, message } from 'antd';
-import './RecipeStepItem.css'
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import TextArea from 'antd/lib/input/TextArea';
 import Dropzone from 'react-dropzone';
@@ -39,13 +38,13 @@ function RecipeStepItem() {
 
     const addRecipeStep = () => {
         setTotalPageInRecipeStep(TotalPageInRecipeStep + 1);
-        setCurrentPageInRecipeStep(TotalPageInRecipeStep + 1);
+        setCurrentPageInRecipeStep(CurrentPageInRecipeStep + 1);
         console.log(CurrentPageInRecipeStep);
     };
 
     const removeRecipeStep = () => {
         setTotalPageInRecipeStep(TotalPageInRecipeStep - 1);
-        setCurrentPageInRecipeStep(TotalPageInRecipeStep - 1);
+        setCurrentPageInRecipeStep(CurrentPageInRecipeStep - 1);
     };
 
     const onDrop = (files) => {
@@ -97,75 +96,76 @@ function RecipeStepItem() {
 
     return (
         <>
-            <Form.List name="names">
-                {(fields, { add, remove }) => {
-                    return (
-                        <>
-                            <Row className="mgb10">
-                                <Col span={20} className="lh32" ><Text strong>레시피스텝</Text></Col>
-                                <Col span={4} ><Button type="dashed" className="wd100"
-                                    onClick={() => { addRecipeStep(); add(); }}><PlusOutlined /></Button></Col>
-                            </Row>
-                            {fields.map((field, index) =>
-                                <div id={"recipe-step-item" + (index + 1)} className="recipe-step mgb10"
-                                    key={index} style={{ display: (CurrentPageInRecipeStep == (index + 1) ? 'block' : 'none') }} >
-                                    <Row className="mgb10">
-                                        <Col span={20} >
-                                            <Pagination
-                                                className="mgb10" size="small" defaultPageSize={1}
-                                                current={CurrentPageInRecipeStep}
-                                                total={TotalPageInRecipeStep}
-                                                onChange={function (page) {
-                                                    setCurrentPageInRecipeStep(page)
-                                                }} />
-                                        </Col>
-                                        <Col span={4}>
-                                            <Button type="dashed" className="wd100"
-                                                onClick={() => { remove(field.name); removeRecipeStep(); }}><MinusOutlined /></Button>
-                                        </Col>
-                                    </Row>
-                                    <div>
-                                        <div className="dropzone">
-                                            <div className="title-image">대표</div>
-                                        </div>
-                                        <Dropzone
-                                            onDrop={onDrop}
-                                            multiple={false}
-                                            maxSize={100000000}>
-                                            {({ getRootProps, getInputProps }) => (
-                                                <Row className="mgb10">
-                                                    <Col className="only-add-btn" span={24}>
-                                                        <Button size={'large'} className="wd100">
-                                                            <div {...getRootProps()} ><span>등록</span>
-                                                                <input {...getInputProps()} /></div>
-                                                        </Button>
-                                                    </Col>
-                                                    <div className="edit-delete-btn wd100" style={{ display: 'none' }}>
-                                                        <Col span={8}><Button size={'large'} className="wd100"
-                                                            onClick={showModal}>대표</Button></Col>
-                                                        <Col span={8}>
-                                                            <Button size={'large'} className="wd100" >
-                                                                <div {...getRootProps()} ><span>수정</span>
+            <Form name="form-recipe">
+                <Form.List name="recipe-list">
+                    {(fields, { add, remove }) => {
+                        return (
+                            <>
+                                <Row className="mgb10">
+                                    <Col span={20} className="lh32" ><Text strong>레시피스텝</Text></Col>
+                                    <Col span={4} ><Button type="dashed" className="wd100"
+                                        onClick={() => { addRecipeStep(); add(); }}><PlusOutlined /></Button></Col>
+                                </Row>
+                                {fields.map((field, index) =>
+                                    <div id={"recipe-step-item" + (index + 1)} className="recipe-step mgb10"
+                                        key={index} style={{ display: (CurrentPageInRecipeStep == (index + 1) ? 'block' : 'none') }} >
+                                            {console.log("display control : " + CurrentPageInRecipeStep + "/" + index)}
+                                        <Row className="mgb10">
+                                            <Col span={20} >
+                                                <Pagination
+                                                    className="mgb10" size="small" defaultPageSize={1}
+                                                    current={CurrentPageInRecipeStep}
+                                                    total={TotalPageInRecipeStep}
+                                                    onChange={function (page) {
+                                                        setCurrentPageInRecipeStep(page)
+                                                    }} />
+                                            </Col>
+                                            <Col span={4}>
+                                                <Button type="dashed" className="wd100"
+                                                    onClick={() => { remove(field.name); removeRecipeStep(); }}><MinusOutlined /></Button>
+                                            </Col>
+                                        </Row>
+                                        <div>
+                                            <div className="dropzone">
+                                                <div className="title-image">대표</div>
+                                            </div>
+                                            <Dropzone
+                                                onDrop={onDrop}
+                                                multiple={false}
+                                                maxSize={100000000}>
+                                                {({ getRootProps, getInputProps }) => (
+                                                    <Row className="mgb10">
+                                                        <Col className="only-add-btn" span={24}>
+                                                            <Button size={'large'} className="wd100">
+                                                                <div {...getRootProps()} ><span>등록</span>
                                                                     <input {...getInputProps()} /></div>
                                                             </Button>
                                                         </Col>
-                                                        <Col span={8}><Button size={'large'} className="wd100"
-                                                            onClick={onDelete}>삭제</Button></Col>
-                                                    </div>
-                                                </Row>
-                                            )}
-                                        </Dropzone>
-                                        <Input className="step-title wd100 mgb10" placeholder="한줄설명" />
-                                        <TextArea className="step-description wd100" placeholder="상세설명" rows={4} />
+                                                        <div className="edit-delete-btn wd100" style={{ display: 'none' }}>
+                                                            <Col span={8}><Button size={'large'} className="wd100"
+                                                                onClick={showModal}>대표</Button></Col>
+                                                            <Col span={8}>
+                                                                <Button size={'large'} className="wd100" >
+                                                                    <div {...getRootProps()} ><span>수정</span>
+                                                                        <input {...getInputProps()} /></div>
+                                                                </Button>
+                                                            </Col>
+                                                            <Col span={8}><Button size={'large'} className="wd100"
+                                                                onClick={onDelete}>삭제</Button></Col>
+                                                        </div>
+                                                    </Row>
+                                                )}
+                                            </Dropzone>
+                                            <Input className="step-title wd100 mgb10" placeholder="한줄설명" />
+                                            <TextArea className="step-description wd100" placeholder="상세설명" rows={4} />
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </>
-                    );
-                }}
-
-            </Form.List>
-
+                                )}
+                            </>
+                        );
+                    }}
+                </Form.List>
+            </Form>
             <Modal
                 title="대표사진 설정"
                 visible={RecipeStepConfirmVisible}

@@ -3,7 +3,7 @@ import { RecipeContext } from '../Store/RecipeStore.js'
 import RecipeStepItem from './Sections/RecipeStepItem'
 import GroceryItem from './Sections/GroceryItem'
 import RecipeInfo from './Sections/RecipeInfo'
-import { Drawer, Button, Form, Divider, message } from 'antd';
+import { Drawer, Button, Form, Divider, message, Input } from 'antd';
 import axios from 'axios'
 import './RecipeAddPage.css'
 
@@ -16,16 +16,18 @@ function RecipeAddPage() {
         setCartListVisible,
         setCookListVisible,
         setCurrentPageInRecipeStep,
-        setTotalPageInRecipeStep
+        setTotalPageInRecipeStep,
+        DetailPageVisible,
+        RecipeDetailData,
     } = useContext(RecipeContext);
 
-    const [addForm] = Form.useForm();
+    const [ groceryForm ] = Form.useForm();
 
     const closeDrawer = () => {
         setAddPageVisible(false);
-        addForm.resetFields();
-        setCurrentPageInRecipeStep(0)
-        setTotalPageInRecipeStep(0);
+        setCurrentPageInRecipeStep(1)
+        setTotalPageInRecipeStep(RecipeDetailData.steps.length);
+        groceryForm.resetFields();
     }
 
     function onAdd() {
@@ -88,7 +90,7 @@ function RecipeAddPage() {
     return (
         <>
             <Drawer
-                title="레시피추가"
+                title={DetailPageVisible?"레시피수정":"레시피추가"}
                 placement="bottom"
                 width="100%"
                 height="100%"
@@ -97,16 +99,14 @@ function RecipeAddPage() {
                 visible={AddPageVisible}
             >
                 <div className="drawer-form">
-                    <Form form={addForm} className="recipe-form">
-                        <RecipeInfo />
-                        <Divider />
-                        <GroceryItem />
-                        <Divider />
-                        <RecipeStepItem />
-                        <div className="recipe-add-btn">
-                            <Button className="wd100" onClick={onAdd}>추가</Button>
-                        </div>
-                    </Form>
+                    <RecipeInfo />
+                    <Divider />
+                    <GroceryItem form={groceryForm}/>
+                    <Divider />
+                    <RecipeStepItem />
+                    <div className="recipe-add-btn">
+                        <Button className="wd100" onClick={onAdd}>{DetailPageVisible?"수정":"추가"}</Button>
+                    </div>
                 </div>
             </Drawer>
         </>

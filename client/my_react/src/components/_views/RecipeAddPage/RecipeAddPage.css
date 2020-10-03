@@ -13,3 +13,41 @@
     background: white
 }
 
+.sub-text{
+    position: absolute;
+    top: 0;
+    line-height: 32px;
+    left: 100px;
+}
+
+.grocery-amount {
+    width : 100% !important
+}
+
+.dropzone {
+    width: 100%;
+    height: 200px;
+    margin-bottom:-1px;
+    border:1px solid lightgray;
+    align-items:center;
+    justify-content:center;
+    display:none;
+}
+
+.dropzone .recipe-image {
+    width:100%;
+    height:100%;
+    object-fit:cover
+}
+
+.dropzone .title-image {
+    z-index: 10000;
+    position: relative;
+    bottom: 190px;
+    left: 10px;
+    background: #40a9ff;
+    width: 50px;
+    text-align: center;
+    color: white;
+    display: none;
+}

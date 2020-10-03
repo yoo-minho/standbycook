@@ -1,10 +1,14 @@
 .site-page-header {
     border: 1px solid rgb(235, 237, 240);
-  }
-
+}
 .dropzone.recipe-detail {
     margin-bottom: 10px;
     display: block;
+}
+.recipe-detail-title{
+    overflow:hidden; 
+    text-overflow:ellipsis; 
+    white-space:nowrap;
 }
 .recipe-info{
     display: flex;

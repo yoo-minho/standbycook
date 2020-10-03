@@ -27,9 +27,7 @@ function RecipeListPage() {
         axios.post('/api/recipe/getRecipeList')
         .then(response => {
             setRecipeList(response.data.qres1.rows);
-            setTimeout(function(){
-                setRecipeListLoading(false);
-            },1000)
+            setRecipeListLoading(false);
         })
     }
 

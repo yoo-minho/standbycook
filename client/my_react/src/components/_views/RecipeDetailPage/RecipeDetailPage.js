@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
 import { Drawer, Typography, Row, Col, Divider, Popover, Pagination, Card, Button, InputNumber, message} from 'antd';
 import axios from 'axios'
-import { ArrowLeftOutlined, HeartOutlined, FieldTimeOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, HeartOutlined, FieldTimeOutlined, InfoCircleOutlined, EditOutlined } from '@ant-design/icons';
 import Comm  from '../Comm/Comm'
 import './RecipeDetailPage.css'
 
@@ -16,7 +16,8 @@ function RecipeDetailPage() {
         TotalPageInRecipeStep, setTotalPageInRecipeStep,
         RecipeDetailRecipeSrno, setRecipeDetailRecipeSrno,
         RecipeDetailData, setRecipeDetailData,
-        RecipeDetailLoading, setRecipeDetailLoading
+        RecipeDetailLoading, setRecipeDetailLoading,
+        setAddPageVisible,
     } = useContext(RecipeContext);
 
     const onBack = () => { 
@@ -24,7 +25,11 @@ function RecipeDetailPage() {
         setRecipeDetailRecipeSrno("");
     }
 
-    const onClick = () => {}
+    const onEdit = () => {
+        setCurrentPageInRecipeStep(0);
+        setTotalPageInRecipeStep(0);
+        setAddPageVisible(true);
+    }
 
     const addCart = () => {
         const myNode = document.querySelectorAll(".recipe-detail-page")[0];
@@ -52,9 +57,7 @@ function RecipeDetailPage() {
                 } else {
                     //pass
                 }
-                setTimeout(function(){
-                    setRecipeDetailLoading(false);
-                },1000)
+                setRecipeDetailLoading(false);
             })
         } else {
             //pass
@@ -91,8 +94,8 @@ function RecipeDetailPage() {
 
     const contentPopover = (
         <div>
-            <Row style={{ marginBottom: '-10px', lineHeight: '32px'}}><Text strong>레시피설명</Text></Row>
-            <Row style={{ marginBottom: '10px', lineHeight: '32px'}}><Text>{RecipeDetailData.description}</Text></Row>
+            <Row style={{ }}><Text strong>레시피설명</Text></Row>
+            <Row style={{ marginBottom: '10px'}}><Text>{RecipeDetailData.description}</Text></Row>
             <Row style={{ marginBottom: '-10px', lineHeight: '32px'}}><Text strong>레시피등록아이디</Text></Row>
             <Row style={{ marginBottom: '10px', lineHeight: '32px'}}><Text>{RecipeDetailData.register_id}</Text></Row>
             <Row style={{ marginBottom: '-10px', lineHeight: '32px'}}><Text strong>레시피등록일시</Text></Row>
@@ -104,11 +107,16 @@ function RecipeDetailPage() {
         <div recipe-srno={RecipeDetailRecipeSrno}>
             <Row>
                 <Col span={16} >
-                    <ArrowLeftOutlined onClick={onBack}/>&nbsp;&nbsp;&nbsp;
-                    <Text strong>{RecipeDetailData.title}</Text>&nbsp;&nbsp;&nbsp; 
+                    <Text strong>
+                        <div className="recipe-detail-title">
+                            <ArrowLeftOutlined onClick={onBack}/>
+                            <span className="mgl10">{RecipeDetailData.title}</span>
+                        </div>
+                    </Text> 
                 </Col>
                 <Col span={8}>
                     <div className="recipe-info">                
+                        <div className="recipe-info-item"><EditOutlined onClick={onEdit}/></div>
                         <div className="recipe-info-item"><FieldTimeOutlined />&nbsp;<span>{RecipeDetailData.min}분</span></div>
                         <div className="recipe-info-item"><Popover placement="bottomRight" title="더보기" content={contentPopover} trigger="click">
                             <InfoCircleOutlined />
