@@ -12,9 +12,17 @@ function TabItem(props) {
         RecipeListVisible, setRecipeListVisible,
         CartListVisible, setCartListVisible,
         setCookListVisible,
+        setGroceryInputList,
+        setRecipeStepInputList,
+        setCurrentPageInRecipeStep,
+        setTotalPageInRecipeStep,
     } = useContext(RecipeContext);
 
     function showAddPageDrawer(){
+        setGroceryInputList([]);
+        setRecipeStepInputList([]);
+        setCurrentPageInRecipeStep(0);
+        setTotalPageInRecipeStep(0);
         setAddPageVisible(true);
     }
 

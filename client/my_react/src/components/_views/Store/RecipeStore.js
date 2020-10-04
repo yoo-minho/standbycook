@@ -29,6 +29,8 @@ function RecipeStore(props) {
 
     //datas
     const [RecipeDetailData, setRecipeDetailData] = useState({});    
+    const [RecipeStepInputList, setRecipeStepInputList] = useState([]);
+    const [GroceryInputList, setGroceryInputList] = useState([]);
     const [RecipeList, setRecipeList] = useState([]);
     const [GroceryList, setGroceryList] = useState([]);
     const [RecipeStep, setRecipeStep] = useState([]);
@@ -40,6 +42,8 @@ function RecipeStore(props) {
     
     return (
         <RecipeContext.Provider value={{
+            RecipeStepInputList, setRecipeStepInputList,
+            GroceryInputList, setGroceryInputList,
             TimerList, setTimerList,
             TimerModalVisible, setTimerModalVisible,
             MyPageVisible, setMyPageVisible,

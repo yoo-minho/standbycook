@@ -17,3 +17,6 @@
 npm install --global --production windows-build-tools
 npm install --global node-gyp
 npm install -g pg-native
+
+1. antd - form.list data를 채우는 형태로 쓰기 힘드니 쓰지말것
+2. update시 새로 추가되는 것과 수정되는 것을 구분하는 방법

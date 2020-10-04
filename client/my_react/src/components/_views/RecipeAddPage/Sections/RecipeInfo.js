@@ -17,7 +17,7 @@ function RecipeInfo() {
        tempFields = [
            {"name": ["title"],"value": RecipeDetailData.title},
            {"name": ["description"],"value": RecipeDetailData.description},
-           {"name": ["min"],"value": RecipeDetailData.serving},
+           {"name": ["min"],"value": RecipeDetailData.min},
        ]
    } else {
        tempFields = [
@@ -28,7 +28,7 @@ function RecipeInfo() {
    }
 
     return (
-        <Form name="form-recipe-info" className="recipe-form" fields={tempFields}>
+        <Form name="form-recipe-info" className="form-recipe-info" fields={tempFields}>
             <Row>
                 <Col span={6} className="lh32" ><Text strong>레시피제목</Text></Col>
                 <Col span={18} >

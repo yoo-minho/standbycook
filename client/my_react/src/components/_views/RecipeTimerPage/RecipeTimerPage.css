@@ -15,3 +15,7 @@
 .empty {
     margin: 0 auto;
 }
+
+.off-off{
+    display: none !important;
+}

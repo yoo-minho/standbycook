@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
 import { Drawer, Typography, Row, Col, Divider, Popover, Pagination, Card, Button, InputNumber, message} from 'antd';
 import axios from 'axios'
-import { ArrowLeftOutlined, HeartOutlined, FieldTimeOutlined, InfoCircleOutlined, EditOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, HeartOutlined, FieldTimeOutlined, InfoCircleOutlined, EditOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import Comm  from '../Comm/Comm'
 import './RecipeDetailPage.css'
 
@@ -18,16 +18,32 @@ function RecipeDetailPage() {
         RecipeDetailData, setRecipeDetailData,
         RecipeDetailLoading, setRecipeDetailLoading,
         setAddPageVisible,
+        setRecipeListVisible,
+        setCartListVisible,
+        setCookListVisible,
+        setGroceryInputList,
+        setRecipeStepInputList,
+        RecipeList, setRecipeList,
     } = useContext(RecipeContext);
 
     const onBack = () => { 
-        setDetailPageVisible(false)
+        setDetailPageVisible(false);
+        setRecipeDetailData({});
         setRecipeDetailRecipeSrno("");
     }
 
     const onEdit = () => {
         setCurrentPageInRecipeStep(0);
         setTotalPageInRecipeStep(0);
+        setGroceryInputList(JSON.parse(JSON.stringify(RecipeDetailData.grocerys)));
+        setRecipeStepInputList(JSON.parse(JSON.stringify(RecipeDetailData.steps)));
+        if(RecipeDetailData.steps){
+            setCurrentPageInRecipeStep(1);
+            setTotalPageInRecipeStep(RecipeDetailData.steps.length);
+        } else {
+            setCurrentPageInRecipeStep(0);
+            setTotalPageInRecipeStep(0);
+        }
         setAddPageVisible(true);
     }
 
@@ -40,6 +56,32 @@ function RecipeDetailPage() {
         }).then(response => {
             message.success('장볼리스트에 추가되었습니다.');
         })
+    }
+
+    const removeRecipe = () => {
+        console.log(RecipeDetailRecipeSrno)
+        if("" !== Comm.coalesce(RecipeDetailRecipeSrno)){
+            axios.post('/api/recipe/removeRecipe',{recipe_srno:RecipeDetailRecipeSrno})
+            .then(response => {
+
+                setRecipeList(RecipeList.filter(recipe => recipe.recipe_srno != RecipeDetailRecipeSrno));
+                setRecipeListVisible(true);
+                setCartListVisible(false);
+                setCookListVisible(false);
+                var elements = document.querySelectorAll('.tab-item')
+                Array.prototype.forEach.call(elements, function (el) {
+                    el.classList.remove('on');
+                });
+                document.querySelectorAll('.tab-item.recipe')[0].classList.add('on');
+                document.querySelectorAll('.ant-popover')[0].classList.add('ant-popover-hidden');
+
+                onBack();
+
+                message.success('레시피가 삭제되었습니다.');
+            })
+        } else {
+            //pass
+        }
     }
 
     useEffect(() => {
@@ -63,24 +105,13 @@ function RecipeDetailPage() {
             //pass
         }
     }
-
+    
     let recipeStep = RecipeDetailData.steps && RecipeDetailData.steps.map((step, index) => 
         <div id={"recipe-step-item"+(index+1)} className="recipe-step" key={index} style={{ marginBottom: '10px', display: (CurrentPageInRecipeStep == (index+1)?'block':'none') }} >
-            <Row style={{ marginBottom: '10px'}}>
-                <Col span={24} >
-                    <Pagination 
-                        style={{ marginBottom:'10px'}} size="small" defaultPageSize={1}
-                        current={CurrentPageInRecipeStep} 
-                        total={TotalPageInRecipeStep} 
-                        onChange={function(page){
-                            setCurrentPageInRecipeStep(page)
-                    }}/>
-                </Col>
-            </Row>
             <div>
                 <div className = "dropzone recipe-detail"><img className="recipe-image" alt={step.title} src={step.url}></img></div>
-                <Row style={{ marginBottom: '10px'}}><Text className="step-title" strong>{step.title}</Text></Row>
-                <Row style={{ marginBottom: '10px'}}><Text className="step-description">{step.description}</Text></Row>
+                <Row><Text className="step-title" strong>{step.title}</Text></Row>
+                <Row style={{ lineHeight: '22px'}}><Text className="step-description">{step.description}</Text></Row>
             </div>
         </div>
     )
@@ -100,6 +131,11 @@ function RecipeDetailPage() {
             <Row style={{ marginBottom: '10px', lineHeight: '32px'}}><Text>{RecipeDetailData.register_id}</Text></Row>
             <Row style={{ marginBottom: '-10px', lineHeight: '32px'}}><Text strong>레시피등록일시</Text></Row>
             <Row style={{ marginBottom: '10px', lineHeight: '32px'}}><Text>{RecipeDetailData.register_datetime}</Text></Row>
+            {RecipeDetailData.register_id === 'dellose' &&
+            <Row style={{ marginBottom: '10px', lineHeight: '32px'}}>
+                <Button style={{ width: '100%'}} onClick={removeRecipe}>레시피삭제</Button>
+            </Row>
+            }
         </div>
       );
     
@@ -118,7 +154,8 @@ function RecipeDetailPage() {
                     <div className="recipe-info">                
                         <div className="recipe-info-item"><EditOutlined onClick={onEdit}/></div>
                         <div className="recipe-info-item"><FieldTimeOutlined />&nbsp;<span>{RecipeDetailData.min}분</span></div>
-                        <div className="recipe-info-item"><Popover placement="bottomRight" title="더보기" content={contentPopover} trigger="click">
+                        <div className="recipe-info-item">
+                            <Popover placement="bottomRight" title="더보기" content={contentPopover} trigger="click">
                             <InfoCircleOutlined />
                         </Popover></div>
                     </div>
@@ -128,6 +165,24 @@ function RecipeDetailPage() {
         </div>
     )
     
+    const clickUp = (e) => {
+        const thisNode = e.currentTarget.parentNode;
+        if(thisNode && thisNode.children && thisNode.children.length == 2){
+            thisNode.children[0].classList.add('off-off');
+            thisNode.children[1].classList.remove('off-off');
+            document.querySelectorAll('.grocery-detail-list')[0].classList.add('reduce');
+        }
+    }
+
+    const clickDown = (e) => {
+        const thisNode = e.currentTarget.parentNode;
+        if(thisNode && thisNode.children && thisNode.children.length == 2){
+            thisNode.children[0].classList.remove('off-off');
+            thisNode.children[1].classList.add('off-off');
+            document.querySelectorAll('.grocery-detail-list')[0].classList.remove('reduce');
+        }
+    }
+
     let recipeDetail = (<Row style={{ marginBottom: '10px'}}>
         <Col span={24} ><Card style={{width: '100%'}} loading={RecipeDetailLoading}></Card></Col><Divider />
         <Col span={24} ><Card style={{width: '100%'}} loading={RecipeDetailLoading}></Card></Col><Divider />
@@ -135,16 +190,33 @@ function RecipeDetailPage() {
     </Row>)
     if(!RecipeDetailLoading) recipeDetail = <div style={{ marginBottom: '73px'}}>
         <Row style={{ marginBottom: '10px', lineHeight: '32px'}}>
-            <Col span={24}><Text strong>식재료</Text></Col>
+            <Col span={12}><Text strong>식재료</Text>&nbsp;<Text>{"(" + RecipeDetailData.serving + "인분 기준)"}</Text></Col>
+            <Col span={12}>
+                <div style={{ float: 'right'}}>
+                    <UpOutlined onClick={clickUp} className="off-off"/>
+                    <DownOutlined onClick={clickDown}/>
+                </div>
+            </Col>
         </Row>
-        <Row style={{ marginBottom: '10px'}}>
+        <Row className="grocery-detail-list reduce mgb10" style={{ marginBottom: '10px'}}>
             {recipeGrocerys}
         </Row>
         <Divider />
         <Row style={{ marginBottom: '10px', lineHeight: '32px'}}>
-            <Col span={24}><Text strong>레시피스텝</Text></Col>
-        </Row>
-        {recipeStep}
+            <Text className="mgb10" strong>레시피스텝</Text>
+            <div>
+                {recipeStep} 
+            </div>
+            <Pagination 
+                style={{margin:'0 auto'}}
+                size="small" defaultPageSize={1}
+                current={CurrentPageInRecipeStep} 
+                total={TotalPageInRecipeStep} 
+                onChange={function(page){
+                    setCurrentPageInRecipeStep(page)
+            }}/>
+        </Row>  
+        
         <div className="button-area">
         <Row>
             <Col span={12}><HeartOutlined style={{fontSize:'20px', marginRight:'12px'}}/>

@@ -50,6 +50,8 @@ function json2query(dataJson){
         tmpQuery = `(SELECT ${tmpColumns} \nFROM ${tmpTableName} \nWHERE 1=1 ${tmpWheres})`;
     } else if ( "UPDATE" === dataJson.mode ){
         tmpQuery = `UPDATE ${tmpTableName} \nSET ${tmpColumnAndValues} \nWHERE 1=1 ${tmpWheres}`;
+    } else if ( "UPDATE-SELECT" === dataJson.mode ){
+        tmpQuery = `UPDATE ${tmpTableName} \nSET ${tmpColumnAndValues} \nFROM (${dataJson.dummy}) dummy \nWHERE 1=1 ${tmpWheres}`;
     } else if ( "DELETE" === dataJson.mode ){
         tmpQuery = `DELETE FROM ${tmpTableName} \nWHERE 1=1 ${tmpWheres}`;
     } else {
@@ -72,7 +74,7 @@ router.post('/getRecipeDetailBySrno', (req, res) => {
     const client = new Client(config.postgresqlInfo);
     client.connect();
 
-    const tDynamic = json2query({mode : 'SUBQUERY', tableName : 'recipe_step', column:["title", "description", "url"], where : ["and recipe_srno = $1","order by sequence"]});
+    const tDynamic = json2query({mode : 'SUBQUERY', tableName : 'recipe_step', column:["title", "description", "url", "recipe_step_srno as srno","title_url_yn"], where : ["and recipe_srno = $1","order by sequence"]});
     const stepsDynamic = json2query({mode : 'SUBQUERY', tableName : tDynamic+' as t', column:["array_to_json(array_agg(row_to_json(t)))"], where : ["and 1=1"]});
     const t2Dynamic = json2query({mode : 'SUBQUERY', tableName : 'recipe_link_grocery rlg left outer join grocery gc on gc.grocery_srno = rlg.grocery_srno', 
                     column:["rlg.grocery_srno as srno", "rlg.grocery_amount as amount","coalesce(gc.grocery_name,'') as name","coalesce(gc.grocery_unit_name,'그램') as unit"], where : ["and recipe_srno = $1"]});
@@ -247,9 +249,107 @@ router.post('/addRecipe', (req, res) => {
                 } 
                 client.end();
                 var qresTotal  = {first:qres,second:qres1,third:qres2}
-                res.status(200).json({success:true, qresTotal});
+                res.status(200).json({success:true, qresTotal,recipe_srno:qres.rows[0].recipe_srno});
             });
         });
+    });
+
+});
+
+router.post('/updateRecipe', (req, res) => {
+    
+    const client = new Client(config.postgresqlInfo);
+    client.connect();
+
+    const sql = json2query({
+        mode : 'UPDATE',
+        tableName : 'recipe',      
+        column : ['title', 'editor_datetime', 'editor_id', 'description', 'min','serving'],
+        value : ['$1', "to_char(now(), 'yyyymmddhh24miss')", '$2', '$3', '$4', '$5'],
+        where : ['and recipe_Srno = $6']
+    })
+    const values = [req.body.title, req.body.user_id, req.body.description, req.body.min, req.body.serving, req.body.recipe_srno];
+
+    let stepValues = [req.body.recipe_srno];
+    let stepDummy = "";
+    req.body.steps.forEach(function(item, i){
+        stepDummy += `\n select 
+                    $${6*i+2}::numeric as recipe_step_srno, 
+                    $${6*i+3} as title, 
+                    $${6*i+4} as description, 
+                    $${6*i+5} as url, 
+                    $${6*i+6}::numeric as sequence, 
+                    $${6*i+7} as title_url_yn union`;
+        stepValues.push(item.srno);
+        stepValues.push(item.title);
+        stepValues.push(item.description);
+        stepValues.push(item.url);
+        stepValues.push(i);
+        stepValues.push(item.title_url_yn);
+    });   
+    stepDummy += `\n select -1 as recipe_step_srno, '' as title, '' as description, '' as url, -1 as sequence, '' as title_url_yn`;
+
+    const sql2 = json2query({
+        mode : 'UPDATE-SELECT',
+        tableName : 'recipe_step',      
+        column : ['title', 'description', 'url', 'sequence', 'title_url_yn'],
+        value : ['dummy.title', "dummy.description", 'dummy.url', 'dummy.sequence', 'dummy.title_url_yn'],
+        dummy : stepDummy,
+        where : ['and recipe_step.recipe_step_srno = dummy.recipe_step_srno', 'and recipe_srno = $1'],
+    })
+
+    client.query(sql, values, (err, qres) => {
+        console.log(sql);
+        console.log(values);
+        console.log(err);
+        if(err){
+            console.log(sql);
+            console.log(values);
+            console.log(err);
+            client.end();
+            return;
+        } 
+        client.query(sql2, stepValues, (err2, qres2) => {
+            console.log(sql2);
+            console.log(stepValues);
+            console.log(err2);
+            if(err2){
+                console.log(sql2);
+                console.log(stepValues);
+                console.log(err2);
+                client.end();
+                return;
+            } 
+            client.end();
+            const qresTotal  = {first:qres,second:qres2}
+            res.status(200).json({success:true, qresTotal});
+        });
+    });
+
+})
+
+router.post('/removeRecipe', (req, res) => {
+    
+    const client = new Client(config.postgresqlInfo);
+    client.connect();
+
+    const sql = json2query({
+        mode : 'DELETE',
+        tableName : 'recipe',      
+        where : ['and recipe_srno = $1']
+    })
+    const values = [req.body.recipe_srno];
+
+    client.query(sql, values, (err, qres) => {
+        if(err){
+            console.log(sql);
+            console.log(values);
+            console.log(err);
+            client.end();
+            return;
+        } 
+        client.end();
+        res.status(200).json({success:true, qres});
     });
 
 });
