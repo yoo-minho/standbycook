@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
 import RecipeStepItem from './Sections/RecipeStepItem'
-import GroceryItem from './Sections/GroceryItem'
-import RecipeInfo from './Sections/RecipeInfo'
-import { Drawer, Button, Divider, message } from 'antd';
+import Grocerys from './Sections/Grocerys'
+import Infos from './Sections/Infos'
+import { Drawer, Button, Divider, message, Form} from 'antd';
 import axios from 'axios'
 import './RecipeAddPage.css'
 
@@ -79,7 +79,6 @@ function RecipeAddPage() {
                 setRecipeList(RecipeList.map((recipe) => {
                     if(recipe.recipe_srno == RecipeDetailRecipeSrno){
                         recipe.title = tempRecipeData.title;
-                        //recipe.url = tempRecipeData.steps.filter();
                     }
                     return recipe;
                 }));
@@ -107,6 +106,14 @@ function RecipeAddPage() {
             })
     }
 
+    const onFinish = (values) => {
+        console.log(values);
+    }
+
+    const tempFields = [
+        {"name": ["min"],"value": "10"},
+    ]
+
     return (
         <>
             <Drawer
@@ -119,14 +126,16 @@ function RecipeAddPage() {
                 visible={AddPageVisible}
             >
                 <div className="drawer-form">
-                    <RecipeInfo />
-                    <Divider />
-                    <GroceryItem />
-                    <Divider />
-                    <RecipeStepItem />
-                    <div className="recipe-add-btn">
-                        <Button className="wd100" onClick={DetailPageVisible ? updateRecipe : addRecipe}>{DetailPageVisible?"수정":"추가"}</Button>
-                    </div>
+                    <Form name="recipe-add" onFinish={onFinish} fields={tempFields}>
+                        <Infos />
+                        <Divider />
+                        <Grocerys />
+                        <Divider />
+                        <RecipeStepItem />
+                        <div className="recipe-add-btn">
+                            <Button htmlType="submit" className="wd100">{DetailPageVisible?"수정":"추가"}</Button>
+                        </div>
+                    </Form>
                 </div>
             </Drawer>
         </>

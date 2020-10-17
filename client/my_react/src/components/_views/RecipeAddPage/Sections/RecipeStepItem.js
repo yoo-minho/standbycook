@@ -143,7 +143,7 @@ function RecipeStepItem() {
 
     return (
         <>
-            <Form name="form-recipe-step" className="form-recipe-step">
+            <>
                 <Row className="mgb10">
                     <Col span={20} className="lh32" ><Text strong>레시피스텝</Text></Col>
                     <Col span={4} ><Button type="dashed" className="wd100" onClick={() => { addRecipeStep(); }}><PlusOutlined /></Button></Col>
@@ -206,7 +206,7 @@ function RecipeStepItem() {
                         </div>
                     </div>
                 )}
-            </Form>
+            </>
             <Modal
                 title="대표사진 설정"
                 visible={RecipeStepConfirmVisible}
