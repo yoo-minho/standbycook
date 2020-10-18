@@ -1,6 +1,6 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
-import RecipeStepItem from './Sections/RecipeStepItem'
+import RecipeSteps from './Sections/RecipeSteps'
 import Grocerys from './Sections/Grocerys'
 import Infos from './Sections/Infos'
 import { Drawer, Button, Divider, message, Form} from 'antd';
@@ -19,7 +19,8 @@ function RecipeAddPage() {
         setTotalPageInRecipeStep,
         DetailPageVisible,
         RecipeDetailRecipeSrno,
-        RecipeDetailData, setRecipeDetailData
+        RecipeDetailData, setRecipeDetailData,
+        RecipeFields, setRecipeFields,
     } = useContext(RecipeContext);
 
     const closeDrawer = () => {
@@ -110,9 +111,15 @@ function RecipeAddPage() {
         console.log(values);
     }
 
-    const tempFields = [
-        {"name": ["min"],"value": "10"},
-    ]
+    /*
+    setTimeout(function(){
+        setFields([
+            {"name": ["min"],"value": "15"},
+            {"name": ["grocery-serving"],"value": "3"},
+            {"name": ["grocery-name",0],"value": "3"},
+        ])
+    },3000)
+    */
 
     return (
         <>
@@ -126,12 +133,10 @@ function RecipeAddPage() {
                 visible={AddPageVisible}
             >
                 <div className="drawer-form">
-                    <Form name="recipe-add" onFinish={onFinish} fields={tempFields}>
+                    <Form name="recipe-add" onFinish={onFinish} fields={RecipeFields}>
                         <Infos />
-                        <Divider />
                         <Grocerys />
-                        <Divider />
-                        <RecipeStepItem />
+                        <RecipeSteps />
                         <div className="recipe-add-btn">
                             <Button htmlType="submit" className="wd100">{DetailPageVisible?"수정":"추가"}</Button>
                         </div>

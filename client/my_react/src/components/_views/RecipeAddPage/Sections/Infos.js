@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Typography, Form, Input, Col, Row, InputNumber } from 'antd';
-import { RecipeContext } from '../../Store/RecipeStore.js'
+import { Typography, Form, Input, Col, Row, InputNumber, Divider } from 'antd';
 
 function Infos() {
 
@@ -8,16 +7,12 @@ function Infos() {
     const { TextArea } = Input;
     
     const titleInput = useRef("");
-    const minInput = useRef(0);
-    const [Min, setMin] = useState(10)
 
     useEffect(() => {
         console.log('useEffect')
         setTimeout(function(){
             titleInput.current.focus();
         },1000)
-        
-        
     }, [])
 
     return (
@@ -53,7 +48,8 @@ function Infos() {
                     <span className="sub-text">분</span>
                 </Col>
             </Row>
-        </ >
+            <Divider />
+        </>
     )
 }
 
