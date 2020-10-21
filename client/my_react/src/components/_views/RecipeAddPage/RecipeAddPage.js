@@ -20,7 +20,8 @@ function RecipeAddPage() {
         DetailPageVisible,
         RecipeDetailRecipeSrno,
         RecipeDetailData, setRecipeDetailData,
-        RecipeFields, setRecipeFields,
+        RecipeFields, 
+        RecipeTitleImageYnFields
     } = useContext(RecipeContext);
 
     const closeDrawer = () => {
@@ -133,7 +134,7 @@ function RecipeAddPage() {
                 visible={AddPageVisible}
             >
                 <div className="drawer-form">
-                    <Form name="recipe-add" onFinish={onFinish} fields={RecipeFields}>
+                    <Form name="recipe-add" onFinish={onFinish} fields={[...RecipeFields,...RecipeTitleImageYnFields]}>
                         <Infos />
                         <Grocerys />
                         <RecipeSteps />
