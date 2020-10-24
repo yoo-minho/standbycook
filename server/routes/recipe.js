@@ -77,7 +77,7 @@ router.post('/getRecipeDetailBySrno', (req, res) => {
     const tDynamic = json2query({mode : 'SUBQUERY', tableName : 'recipe_step', column:["title", "description", "url", "recipe_step_srno as srno","title_url_yn"], where : ["and recipe_srno = $1","order by sequence"]});
     const stepsDynamic = json2query({mode : 'SUBQUERY', tableName : tDynamic+' as t', column:["array_to_json(array_agg(row_to_json(t)))"], where : ["and 1=1"]});
     const t2Dynamic = json2query({mode : 'SUBQUERY', tableName : 'recipe_link_grocery rlg left outer join grocery gc on gc.grocery_srno = rlg.grocery_srno', 
-                    column:["rlg.grocery_srno as srno", "rlg.grocery_amount as amount","coalesce(gc.grocery_name,'') as name","coalesce(gc.grocery_unit_name,'그램') as unit"], where : ["and recipe_srno = $1"]});
+                    column:["rlg.grocery_srno as srno", "rlg.grocery_amount as amount","coalesce(gc.grocery_name,'') as name","coalesce(gc.grocery_unit_name,'') as unit"], where : ["and recipe_srno = $1"]});
     const grocerysDynamic = json2query({mode : 'SUBQUERY', tableName : t2Dynamic+' as t2', column:["array_to_json(array_agg(row_to_json(t2)))"], where : ["and 1=1"]});
     const sql1 = json2query({ mode : 'SELECT', tableName : 'recipe', column : [grocerysDynamic+' as grocerys', stepsDynamic+' as steps', '*'], where : ["and recipe_srno = $1"]})
     const values1 = [req.body.recipe_srno];

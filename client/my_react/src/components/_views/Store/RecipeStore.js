@@ -28,7 +28,7 @@ function RecipeStore(props) {
     const [TotalPageInRecipeStep, setTotalPageInRecipeStep] = useState(0);
 
     //datas
-    const [RecipeFields, setRecipeFields] = useState([{"name": ["min"],"value": "10"},{"name": ["grocery-serving"],"value": "2"}]);  
+    const [RecipeFields, setRecipeFields] = useState([{"name": ["min"],"value": "10"},{"name": ["serving"],"value": "2"}]);  
     const [RecipeTitleImageYnFields, setRecipeTitleImageYnFields] = useState([]);  
     const [RecipeDetailData, setRecipeDetailData] = useState({});    
     const [RecipeStepInputList, setRecipeStepInputList] = useState([]);

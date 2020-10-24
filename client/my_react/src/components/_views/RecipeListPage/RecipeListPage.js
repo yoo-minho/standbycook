@@ -15,7 +15,10 @@ function RecipeListPage() {
         setRecipeDetailRecipeSrno,
         setRecipeDetailLoading,
         setGroceryList,
-        RecipeListVisible
+        RecipeListVisible,
+        setRecipeDetailData,
+        setCurrentPageInRecipeStep,
+        setTotalPageInRecipeStep,
     } = useContext(RecipeContext);
 
     useEffect(() => {
@@ -23,7 +26,14 @@ function RecipeListPage() {
         getGroceryList();
     }, [])
 
-    function getRecipeList(){
+    const showDetailPage = (recipeSrno) => {
+        setRecipeDetailLoading(true);
+        getRecipeDetailBySrno(recipeSrno);
+        setRecipeDetailRecipeSrno(recipeSrno);
+        setDetailPageVisible(true);
+    }
+
+    const getRecipeList = () => {
         axios.post('/api/recipe/getRecipeList')
         .then(response => {
             setRecipeList(response.data.qres1.rows);
@@ -31,42 +41,53 @@ function RecipeListPage() {
         })
     }
 
-    function getGroceryList(){
+    const getGroceryList = () => {
         axios.post('/api/recipe/getGroceryList')
         .then(response => {
             setGroceryList(response.data.qres1.rows);
         })
     }
 
-    const showDetailPage = (recipeSrno) => {
-        setRecipeDetailLoading(true);
-        setDetailPageVisible(true);
-        setRecipeDetailRecipeSrno(recipeSrno);
+    const getRecipeDetailBySrno = (recipsSrno) => {
+        axios.post('/api/recipe/getRecipeDetailBySrno',{recipe_srno:recipsSrno})
+            .then(response => {
+                setRecipeDetailData(response.data.qres1.rows[0]);
+                if(response.data.qres1.rows[0].steps && response.data.qres1.rows[0].steps.length > 0){
+                    setCurrentPageInRecipeStep(1);
+                    setTotalPageInRecipeStep(response.data.qres1.rows[0].steps.length);
+                } else {
+                    //pass
+                }
+                setRecipeDetailLoading(false);
+            })
     }
 
-    let recipeList = (<>{",,,,,,,".split(',').map( (v,i) => <Col span={12} key={i}><div className="left-bottom"><Card style={{width: '100%'}} loading={RecipeListLoading}></Card></div></Col>)}</>)
-    if(!RecipeListLoading) recipeList = RecipeList && RecipeList.map( recipe => 
-        <Col span={12} key={recipe.recipe_srno} >
-            <div className="left-bottom" onClick={() => { showDetailPage(recipe.recipe_srno)}}>
-                <div className="recipe-list-image">
-                    <img 
-                        className="recipe-image" 
-                        src={Comm.coalesce(recipe.url,"upload_files/recipe_images/1600592225726_다운로드.png")} 
-                        alt={recipe.title} />
-                </div>
-                <div className="recipe-title" >{recipe.title}</div>
-                <div className="recipe-title-icon">
-                    <div><HeartOutlined />&nbsp;<span>345</span></div>&nbsp;&nbsp;
-                    <div><FieldTimeOutlined />&nbsp;<span>{recipe.min}분</span></div>
-                    <div className="recipe-title-view"><span>987</span>&nbsp;<span>cooks</span></div>
-                </div>
-            </div>
-        </Col>
-    )
+    const loadingView = (<>{",,,,,,,".split(',').map( (v,i) => 
+        <Col span={12} key={i}><div className="left-bottom">
+            <Card className="wd100" loading={RecipeListLoading}></Card>
+        </div></Col>
+    )}</>)
 
     return (
         <Row className="right-top" style={{display:(RecipeListVisible?'inherit':'none')}}>
-            {recipeList}
+            {RecipeListLoading ? loadingView : RecipeList && RecipeList.map( recipe => 
+                    <Col span={12} key={recipe.recipe_srno} >
+                        <div className="left-bottom" onClick={() => { showDetailPage(recipe.recipe_srno)}}>
+                            <div className="recipe-list-image">
+                                <img 
+                                    className="recipe-image" 
+                                    src={Comm.coalesce(recipe.url,"upload_files/recipe_images/1600592225726_다운로드.png")} 
+                                    alt={recipe.title} />
+                            </div>
+                            <div className="recipe-title" >{recipe.title}</div>
+                            <div className="recipe-title-icon">
+                                <div><HeartOutlined />&nbsp;<span>345</span></div>&nbsp;&nbsp;
+                                <div><FieldTimeOutlined />&nbsp;<span>{recipe.min}분</span></div>
+                                <div className="recipe-title-view"><span>987</span>&nbsp;<span>cooks</span></div>
+                            </div>
+                        </div>
+                    </Col>
+            )}
         </Row>
     )
 }

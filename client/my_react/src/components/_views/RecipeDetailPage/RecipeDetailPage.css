@@ -31,6 +31,11 @@
     background-color: rgb(82, 196, 26);
 }
 
+.grocery-detail-list{
+    width: 100%;
+    display: block;
+}
+
 .grocery-detail-list.reduce{
     overflow: hidden;
     height: 90px;

@@ -1,13 +1,14 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
+import { Drawer, Button, message, Form} from 'antd';
+import axios from 'axios'
+import Comm from '../Comm/Comm'
 import RecipeSteps from './Sections/RecipeSteps'
 import Grocerys from './Sections/Grocerys'
 import Infos from './Sections/Infos'
-import { Drawer, Button, Divider, message, Form} from 'antd';
-import axios from 'axios'
-import './RecipeAddPage.css'
+import './RecipeEditPage.css'
 
-function RecipeAddPage() {
+function RecipeEditPage() {
 
     const {
         AddPageVisible, setAddPageVisible,
@@ -21,7 +22,8 @@ function RecipeAddPage() {
         RecipeDetailRecipeSrno,
         RecipeDetailData, setRecipeDetailData,
         RecipeFields, 
-        RecipeTitleImageYnFields
+        RecipeTitleImageYnFields,
+        GroceryList,
     } = useContext(RecipeContext);
 
     const closeDrawer = () => {
@@ -32,51 +34,34 @@ function RecipeAddPage() {
         }
     }
 
-    function getRecipeData(){
+    const onSubmit = (values) => {
         
-        const infoNode = document.querySelectorAll(".form-recipe-info")[0];
-        const groceryNode = document.querySelectorAll(".form-grocery")[0];
-        const stepNode = document.querySelectorAll(".form-recipe-step")[0];
+        console.log('onFinish');
+        console.log(values);
 
         let recipeData = {
             user_id: 'dellose',
             recipe_srno: Number(RecipeDetailData.recipe_srno),
-            title: infoNode.querySelectorAll(".recipe-title-input")[0].value,
-            description: infoNode.querySelectorAll(".recipe-description-input")[0].value,
-            min: infoNode.querySelectorAll(".recipe-min-input input")[0].value,
-            serving: groceryNode.querySelectorAll(".recipe-serving-input input")[0].value,
-            grocerys: [],
-            steps: []
+            title: Comm.coalesce(values.title),
+            description: Comm.coalesce(values.description),
+            min: Comm.coalesce(values.min),
+            serving: Comm.coalesce(values.serving),
+            grocerys: getGroceryArray(values),
+            steps: getStepArray(values)
         }
 
-        Array.prototype.forEach.call(groceryNode.querySelectorAll(".recipe-grocery"), function (el) {
-            recipeData.grocerys.push({
-                srno: Number(el.querySelectorAll(".grocery-name")[0].getAttribute('grocery-srno')),
-                amount: Number(el.querySelectorAll(".grocery-amount input")[0].value),
-                name : el.querySelectorAll(".ant-select-selection-item")[0].textContent,
-                unit : el.querySelectorAll(".grocery-unit")[0].textContent
-            });
-        });
-
-        Array.prototype.forEach.call(stepNode.querySelectorAll(".recipe-step"), function (el) {
-            recipeData.steps.push({
-                srno : Number(el.getAttribute('srno')),
-                url: (el.querySelectorAll(".dropzone img")[0] ? el.querySelectorAll(".dropzone img")[0].src : ''),
-                title: el.querySelectorAll(".step-title")[0].value,
-                description: el.querySelectorAll(".step-description")[0].value,
-                title_url_yn: ('block' === el.querySelectorAll(".title-image")[0].style.display ? 'Y' : 'N')
-            });
-        });
-
-        console.log(recipeData)
-
-        return recipeData
+        if(DetailPageVisible) { 
+            updateRecipe(recipeData);
+        } else {
+            addRecipe(recipeData);
+        }
+        
     }
 
-    function updateRecipe() {
-        const tempRecipeData = getRecipeData();
+    const updateRecipe = (tempRecipeData) => {
+        console.log(tempRecipeData)
         axios.post('/api/recipe/updateRecipe', tempRecipeData)
-            .then(response => {
+            .then(() => {
                 closeDrawer();
                 setRecipeList(RecipeList.map((recipe) => {
                     if(recipe.recipe_srno == RecipeDetailRecipeSrno){
@@ -89,8 +74,7 @@ function RecipeAddPage() {
             })
     }
 
-    function addRecipe() {
-        const tempRecipeData = getRecipeData();
+    const addRecipe = (tempRecipeData) => {
         axios.post('/api/recipe/addRecipe', tempRecipeData)
             .then(response => {
                 closeDrawer();
@@ -99,28 +83,48 @@ function RecipeAddPage() {
                 setRecipeListVisible(true);
                 setCartListVisible(false);
                 setCookListVisible(false);
-                var elements = document.querySelectorAll('.tab-item')
-                Array.prototype.forEach.call(elements, function (el) {
-                    el.classList.remove('on');
-                });
+                document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('on'));
                 document.querySelectorAll('.tab-item.recipe')[0].classList.add('on');
                 message.success('레시피가 추가되었습니다.');
             })
     }
 
-    const onFinish = (values) => {
-        console.log(values);
+    const getGroceryArray = (originValues) => {
+        const tempArr = [];
+        if(originValues.grocery_srno){
+            const groceryCount = originValues.grocery_srno.length;
+            for(let i = 0 ; i < groceryCount ; i++){
+                const groceryInfo = Comm.coalesce(GroceryList.filter((grocery) => {if(grocery.grocery_srno == originValues.grocery_srno[i]) return grocery })[0])
+                tempArr.push({
+                    srno: Comm.coalesce(originValues.grocery_srno[i]),
+                    amount: Comm.coalesce(originValues.grocery_amount[i]),
+                    name: groceryInfo.grocery_name,
+                    unit: Comm.coalesce(groceryInfo.unit,'g')
+                });
+            }
+        } 
+        return tempArr
     }
 
-    /*
-    setTimeout(function(){
-        setFields([
-            {"name": ["min"],"value": "15"},
-            {"name": ["grocery-serving"],"value": "3"},
-            {"name": ["grocery-name",0],"value": "3"},
-        ])
-    },3000)
-    */
+    const getStepArray = (originValues) => {
+        const tempArr = [];
+        if(originValues.step_description){
+            const stepCount = originValues.step_description.length;
+            for(let i = 0 ; i < stepCount ; i++){
+                const tempJson = {
+                    url: Comm.coalesce(originValues.step_url[i]),
+                    title: Comm.coalesce(originValues.step_title[i]),
+                    description: Comm.coalesce(originValues.step_description[i]),
+                    title_url_yn: Comm.coalesce(originValues.step_title_yn[i]),
+                }
+                if(RecipeDetailData.steps && RecipeDetailData.steps[i]){
+                    tempJson.srno = RecipeDetailData.steps[i].srno
+                } 
+                tempArr.push(tempJson);
+            }
+        } 
+        return tempArr
+    }
 
     return (
         <>
@@ -134,7 +138,10 @@ function RecipeAddPage() {
                 visible={AddPageVisible}
             >
                 <div className="drawer-form">
-                    <Form name="recipe-add" onFinish={onFinish} fields={[...RecipeFields,...RecipeTitleImageYnFields]}>
+                    <Form name="recipe-add" 
+                        fields={[...RecipeFields,...RecipeTitleImageYnFields]} 
+                        onFinish={onSubmit} 
+                    >
                         <Infos />
                         <Grocerys />
                         <RecipeSteps />
@@ -148,4 +155,4 @@ function RecipeAddPage() {
     )
 }
 
-export default RecipeAddPage
+export default RecipeEditPage

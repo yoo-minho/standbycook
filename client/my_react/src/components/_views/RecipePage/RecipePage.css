@@ -18,6 +18,10 @@ button.add-button{
     margin: 56px 0;
 }
 
+.mga{
+    margin: 0 auto !important
+}
+
 .mgl10{
     margin-left: 10px !important
 }
@@ -26,12 +30,24 @@ button.add-button{
     margin-left: 20px !important
 }
 
+.mgb10m{
+    margin-bottom: -10px !important
+}
+
 .mgb10{
     margin-bottom: 10px !important
 }
 
+.mgb73{
+    margin-bottom: 73px !important
+}
+
 .mgr10 {
     margin-right : 10px !important
+}
+
+.lh22{
+    line-height: 22px !important
 }
 
 .lh32{
@@ -49,5 +65,7 @@ button.add-button{
 .pd0{
     padding:0 !important
 }
+
+ 
 
 

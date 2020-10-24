@@ -31,7 +31,6 @@ function RecipeSteps() {
             el.querySelectorAll(".title-image")[0].style.display = (isCurrentIndex ? 'block' : 'none') ;
             tempArr.push({ "name": ["step-title-yn", i], "value": (isCurrentIndex ? 'Y' : 'N')});
         });
-        
         setRecipeTitleImageYnFields(tempArr);
     }
 

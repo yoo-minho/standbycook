@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Typography, Form, Input, Col, Row, InputNumber, Divider } from 'antd';
 
 function Infos() {

@@ -87,7 +87,6 @@ function RecipeStepItem(props) {
     return (
         <div
             className="mgb10"
-            key={index}
             step={index + 1}
             ref={recipeStepItem}
             style={{ display: (CurrentPageInRecipeStep == (index + 1) ? 'block' : 'none') }} >
@@ -107,9 +106,9 @@ function RecipeStepItem(props) {
             <div>
                 <div className="dropzone" style={{ display: field.url ? 'block' : 'none' }}>
                     <img src={field.url} className="recipe-image" alt="recipe-image" />
-                    <Form.Item hidden name={["step-url", index]}><Input /></Form.Item>
+                    <Form.Item hidden name={["step_url", index]}><Input /></Form.Item>
                     <div className="title-image" style={{ display: field.title_url_yn === 'Y' ? 'block' : 'none' }}>대표</div>
-                    <Form.Item hidden name={["step-title-yn", index]}><Input value="N"/></Form.Item>
+                    <Form.Item hidden name={["step_title_yn", index]}><Input value="N"/></Form.Item>
                 </div>
                 <Dropzone onDrop={uploadImage} multiple={false} maxSize={100000000}>
                     {({ getRootProps, getInputProps }) => (
@@ -131,10 +130,10 @@ function RecipeStepItem(props) {
                         </Row>
                     )}
                 </Dropzone>
-                <Form.Item name={["step-title", index]} className="mgb10">
+                <Form.Item name={["step_title", index]} className="mgb10">
                     <Input className="wd100 mgb10" placeholder="한줄설명" />
                 </Form.Item>
-                <Form.Item name={["step-description", index]} className="mgb10">
+                <Form.Item name={["step_description", index]} className="mgb10">
                     <TextArea className="wd100" placeholder="상세설명" rows={4} />
                 </Form.Item>
             </div>

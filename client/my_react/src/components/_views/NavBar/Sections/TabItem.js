@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Col } from 'antd';
 import { RecipeContext } from '../../Store/RecipeStore'
 import { FieldTimeOutlined, ProfileOutlined, ShoppingCartOutlined, DatabaseOutlined, ScheduleOutlined, PlusOutlined } from '@ant-design/icons'
-import RecipeAddPage from '../../RecipeAddPage/RecipeAddPage'
+import RecipeEditPage from '../../RecipeEditPage/RecipeEditPage'
 import './TabItem.css'
 
 function TabItem(props) {
@@ -16,11 +16,13 @@ function TabItem(props) {
         setRecipeStepInputList,
         setCurrentPageInRecipeStep,
         setTotalPageInRecipeStep,
+        setRecipeFields
     } = useContext(RecipeContext);
 
     function showAddPageDrawer(){
         setGroceryInputList([]);
         setRecipeStepInputList([]);
+        setRecipeFields([{"name": ["min"],"value": "10"},{"name": ["serving"],"value": "2"}]);
         setCurrentPageInRecipeStep(0);
         setTotalPageInRecipeStep(0);
         setAddPageVisible(true);
@@ -68,7 +70,7 @@ function TabItem(props) {
 
     return (
         <>
-            {props.gubun === 'add' && <RecipeAddPage/>}
+            {props.gubun === 'add' && <RecipeEditPage/>}
             <Col className={tabClassName} span={6} onClick={changeTab}>
                 <div className="tab-icon-div">{tabIcon}</div>
                 <div className="tab-text">{tabText}</div>
