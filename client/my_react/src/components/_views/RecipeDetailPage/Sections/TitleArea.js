@@ -50,10 +50,11 @@ function TitleArea() {
         }
         if(RecipeDetailData.steps && RecipeDetailData.steps.length > 0){
             RecipeDetailData.steps.forEach((step, index) => {
-                tempArr.push({"name": ["step_url", index],"value": step.url});
-                tempArr.push({"name": ["step_title", index],"value": step.title});
-                tempArr.push({"name": ["step_description", index],"value": step.description});
-                tempArr.push({"name": ["step_title_yn", index],"value": step.title_url_yn});
+                let currentIndex = index;
+                tempArr.push({"name": ["step_url", currentIndex],"value": step.url});
+                tempArr.push({"name": ["step_title", currentIndex],"value": step.title});
+                tempArr.push({"name": ["step_description", currentIndex],"value": step.description});
+                tempArr.push({"name": ["step_title_yn", currentIndex],"value": step.title_url_yn});
             })
         }
         return tempArr;
