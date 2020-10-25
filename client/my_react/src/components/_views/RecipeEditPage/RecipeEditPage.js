@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
 import { Drawer, Button, message, Form} from 'antd';
 import axios from 'axios'
@@ -10,6 +10,8 @@ import './RecipeEditPage.css'
 
 function RecipeEditPage() {
 
+    console.log('RecipeEditPage');
+    
     const {
         AddPageVisible, setAddPageVisible,
         RecipeList, setRecipeList,
@@ -25,6 +27,19 @@ function RecipeEditPage() {
         RecipeTitleImageYnFields,
         GroceryList,
     } = useContext(RecipeContext);
+
+    console.log(RecipeFields);
+
+    const [recipeAddform] = Form.useForm();
+
+    useEffect(() => {
+        if(DetailPageVisible){
+            //pass
+        } else {
+            recipeAddform.setFields([...RecipeFields,...RecipeTitleImageYnFields])
+        }
+    }, [recipeAddform])
+    
 
     const closeDrawer = () => {
         setAddPageVisible(false);
@@ -126,6 +141,11 @@ function RecipeEditPage() {
         return tempArr
     }
 
+    const layout = {
+        labelCol: { span: 8 },
+        wrapperCol: { span: 16 },
+      };
+
     return (
         <>
             <Drawer
@@ -138,10 +158,7 @@ function RecipeEditPage() {
                 visible={AddPageVisible}
             >
                 <div className="drawer-form">
-                    <Form name="recipe-add" 
-                        fields={[...RecipeFields,...RecipeTitleImageYnFields]} 
-                        onFinish={onSubmit} 
-                    >
+                    <Form {...layout} form={recipeAddform} name="recipe-add"  onFinish={onSubmit} >
                         <Infos />
                         <Grocerys />
                         <RecipeSteps />

@@ -19,12 +19,12 @@ function RecipeStepItem(props) {
     } = useContext(RecipeContext);
 
     return (
-        <div className="mgb10" step={index + 1} ref={recipeStepItemRef} style={{ display: (CurrentPageInRecipeStep == (index + 1) ? 'block' : 'none') }} >
+        <div className="mgb10" step={index + 1} ref={recipeStepItemRef} style={{ display: (CurrentPageInRecipeStep === (index + 1) ? 'block' : 'none') }} >
             <RecipeStepItemTool srno={field.srno}/>
             <div>
                 <div className="dropzone" style={{ display: field.url ? 'block' : 'none' }}>
-                    <img src={field.url} className="recipe-image" alt="recipe-image" />
-                    <Form.Item hidden name={["step_url", index]}><Input /></Form.Item>
+                    <img src={field.url} className="recipe-image" alt="photo" />
+                    <Form.Item hidden name={["step_url", index]}><Input/></Form.Item>
                     <div className="title-image" style={{ display: field.title_url_yn === 'Y' ? 'block' : 'none' }}>대표</div>
                     <Form.Item hidden name={["step_title_yn", index]}><Input value="N"/></Form.Item>
                 </div>

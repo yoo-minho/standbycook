@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { RecipeContext } from '../Store/RecipeStore.js'
 import { Drawer, Row, Col, Divider, Card} from 'antd';
-
 import Grocerys from './Sections/Grocerys'
 import Steps from './Sections/Steps'
 import TitleArea from './Sections/TitleArea'
@@ -10,6 +9,8 @@ import ButtonArea from './Sections/ButtonArea'
 import './RecipeDetailPage.css'
 
 function RecipeDetailPage() {
+
+    console.log("RecipeDetailPage")
 
     const {
         DetailPageVisible, 

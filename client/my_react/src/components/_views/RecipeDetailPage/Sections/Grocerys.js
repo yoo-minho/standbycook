@@ -2,6 +2,7 @@ import React, { useContext, useRef } from 'react'
 import { RecipeContext } from '../../Store/RecipeStore.js'
 import { Row, Col, Divider, Typography } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
+import Comm from '../../Comm/Comm';
 
 function Grocerys() {
 
@@ -17,7 +18,7 @@ function Grocerys() {
     const clickDown = (e) => clickMoreButton(false,e)
     const clickMoreButton = (isUp, e) => {
         const thisNode = e.currentTarget.parentNode;
-        if(thisNode && thisNode.children && thisNode.children.length == 2){
+        if(thisNode && thisNode.children && thisNode.children.length === 2){
             if(isUp){
                 thisNode.children[0].classList.add('off-off');
                 thisNode.children[1].classList.remove('off-off');
@@ -47,7 +48,7 @@ function Grocerys() {
                     {RecipeDetailData.grocerys && RecipeDetailData.grocerys.map((grocery, index) => 
                         <Col key={index} span={12} className="recipe-grocery mgb10" >
                             <Text className="grocery-name" strong>{grocery.name}</Text>&nbsp;-&nbsp;
-                            <Text className="grocery-amount">{grocery.amount}{grocery.unit}</Text>
+                            <Text className="grocery-amount">{grocery.amount}{Comm.coalesce(grocery.unit,'g')}</Text>
                         </Col>            
                     )}
                 </Row>

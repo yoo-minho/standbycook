@@ -20,6 +20,7 @@ function TabItem(props) {
     } = useContext(RecipeContext);
 
     function showAddPageDrawer(){
+        
         setGroceryInputList([]);
         setRecipeStepInputList([]);
         setRecipeFields([{"name": ["min"],"value": "10"},{"name": ["serving"],"value": "2"}]);
@@ -35,10 +36,7 @@ function TabItem(props) {
             setRecipeListVisible((props.gubun === 'recipe') ? true : false);
             setCartListVisible((props.gubun === 'cart') ? true : false);
             setCookListVisible((props.gubun === 'cook') ? true : false);
-            var elements = document.querySelectorAll('.tab-item')
-            Array.prototype.forEach.call(elements, function(el){
-                el.classList.remove('on');
-            });
+            document.querySelectorAll('.tab-item').forEach((el)=>{el.classList.remove('on')});
             e.currentTarget.classList.add('on');
         }
     }
