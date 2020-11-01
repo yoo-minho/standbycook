@@ -1,0 +1,19 @@
+.login-back {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.login-logo {
+    width: 250px;
+    height: 200px;
+    background-image: url(/static/media/giphy.5bde931c.gif);
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 20px auto;
+}
+
+.login-layout {
+    width: 250px;
+    margin: 0 auto;
+}
