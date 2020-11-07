@@ -47,6 +47,10 @@
     background-size: 56px 56px;
 }
 
+.signup-section .checkbox_link {
+    position: relative;
+}
+
 .signup-section .user_form {
     background-color: #fff;
     min-height: 100%;
@@ -166,6 +170,21 @@
     background: url(https://res.kurly.com/mobile/service/common/2006/ico_checkbox.svg) no-repeat 50% 50%;
     background-size: 24px 24px;
     vertical-align: -5px;
+}
+
+.signup-section .user_reg input[type=checkbox]:checked+.ico {
+    background: url(https://res.kurly.com/mobile/service/common/2006/ico_checkbox_checked.svg) no-repeat 50% 50%;
+    background-size: 24px 24px;
+}
+
+.signup-section .reg_agree .checkbox_link .link {
+    position: absolute;
+    top: 0;
+    right: -20px;
+    width: 40px;
+    height: 40px;
+    background: url(https://res.kurly.com/mobile/service/common/2007/ico_more_arrow.svg) no-repeat 100% 0;
+    background-size: 40px 40px;
 }
 
 .signup-section .reg_agree .checkbox_child {

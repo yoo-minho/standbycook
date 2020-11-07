@@ -39,7 +39,8 @@
     text-indent: -9999px;
 }
 
-.signin-section [name=password], .btn_member{
+.signin-section [name=password],
+.btn_member {
     margin-top: 10px;
 }
 
@@ -60,12 +61,35 @@
     letter-spacing: -.6px;
 }
 
-input[type=checkbox]:checked+.ico,
-input[type=checkbox]:checked {
+.signin-section [type=checkbox] {
+    margin-right: 3px;
+}
+
+.signin-section input[type=checkbox]+.ico,
+.signin-section input[type=checkbox] {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #999;
+    border-radius: 2px;
+    background: 0 0;
+    vertical-align: -2px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.signin-section input[type=checkbox]:checked+.ico,
+.signin-section input[type=checkbox]:checked {
     border-radius: 0;
     border: 0;
     background: transparent url(https://res.kurly.com/mobile/service/common/1908/ico_checkbox_checked.png) no-repeat 0 0;
     background-size: 16px 16px;
+}
+
+.signin-section input[type=checkbox]:focus {
+    box-sizing: border-box;
+    padding: 0;
+    outline:none;
 }
 
 .signin-section .auto_security {
@@ -96,26 +120,4 @@ input[type=checkbox]:checked {
     height: 10px;
     margin-top: 20px;
     background-color: #666;
-}
-
-.signin-section input[type='checkbox']{
-    width:1rem !important;
-    height: 1rem !important;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -o-appearance: none;
-    appearance:none;
-    outline: none;
-    box-shadow: none;
-    background: url()no-repeat;
-    border: 1px solid black;
-}
-
-.signin-section input[type='checkbox']:checked{
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -o-appearance: none;
-    appearance:none;
-    box-shadow: none;
-    background: url(https://res.kurly.com/mobile/service/common/1908/ico_checkbox_checked.png) no-repeat;
 }

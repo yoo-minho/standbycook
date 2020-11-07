@@ -12,50 +12,48 @@ function SignIn() {
       className="signin-section"
       style={{ display: SignUpVisible ? "none" : "block" }}
     >
-      <form id="form" name="frmAgree">
-        <div class="inp_initialization">
+      <form id="signin-form" name="frmAgree">
+        <div className="inp_initialization">
           <input
             type="text"
             name="m_id"
-            value=""
             placeholder="아이디를 입력해주세요"
           />
-          <button type="button" class="btn_initialization">
+          <button type="button" className="btn_initialization">
             텍스트 삭제
           </button>
         </div>
-        <div class="inp_initialization">
+        <div className="inp_initialization">
           <input
             type="password"
             name="password"
             required="required"
             msgr="비밀번호를 입력해주세요"
             placeholder="비밀번호를 입력해주세요"
-            value=""
+            autoComplete="on"
           />
-          <button type="button" class="btn_initialization">
+          <button type="button" className="btn_initialization">
             텍스트 삭제
           </button>
         </div>
-        <div class="checkbox_save">
+        <div className="checkbox_save">
           <label>
-            <input type='checkbox'/>
             <input type="checkbox" name="save_id"/>{" "}
-            아이디 저장
+              자동로그인
           </label>
         </div>
-        <button type="submit" class="btn_type1">
-          <span class="txt_type">로그인</span>
+        <button type="submit" className="btn_type1">
+          <span className="txt_type">로그인</span>
         </button>
-        <div class="btn_type2 btn_member" onClick={showSignUpPage}>
-          <span class="txt_type">회원가입</span>
+        <div className="btn_type2 btn_member" onClick={showSignUpPage}>
+          <span className="txt_type">회원가입</span>
         </div>
-        <div class="login_search">
-          <a href="/m2/mem/find_id.php" class="link">
+        <div className="login_search">
+          <a href="/m2/mem/find_id.php" className="link">
             아이디 찾기
           </a>
-          <span class="bar"></span>
-          <a href="/m2/mem/find_pwd.php" class="link">
+          <span className="bar"></span>
+          <a href="/m2/mem/find_pwd.php" className="link">
             비밀번호 찾기
           </a>
         </div>
