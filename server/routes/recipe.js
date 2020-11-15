@@ -1,7 +1,13 @@
 const express = require('express');
 const router = express.Router();
+
 const multer = require('multer');
 var ffmpeg = require('fluent-ffmpeg');
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+const jwt = require('jsonwebtoken');
+
 const config = require('../config/key')
 const { Client } = require('pg');
 
@@ -514,6 +520,53 @@ router.post('/deleteRecipeInCart', (req, res) => {
         } 
         client.end();
         res.status(200).json({success:true, qres1});
+    });
+});
+
+router.post('/signUp', async (req, res) => {
+
+    function convertHash(saltKey, orginPwd) {
+      return new Promise((resolve) => {
+        bcrypt.hash(orginPwd, saltKey, (err, hash) => {
+          if (err) return;
+          resolve(hash);
+        });
+      });
+    }
+
+    function generateSalt() {
+      return new Promise((resolve) => {
+        bcrypt.genSalt(saltRounds, (err, salt) => {
+          if (err) return;
+          resolve(salt);
+        });
+      });
+    }
+
+    const saltKey = await generateSalt();
+    req.body.password = await convertHash(saltKey, req.body.password);
+
+    const client = new Client(config.postgresqlInfo);
+    client.connect();
+
+    const sql1 = json2query({
+        mode : 'INSERT', 
+        tableName : 'user_data', 
+        column : ['id', 'name', 'password', 'register_datetime'],
+        value : ['$1', '$2', '$3', "to_char(now(), 'yyyymmddhh24miss')"]
+    })
+    const values1 = [req.body.id, req.body.name, req.body.password];
+
+    client.query(sql1, values1, (err1, qres1) => {
+        if (err1) {
+            console.log(sql1);
+            console.log(values1);
+            console.log(err1);
+            client.end();
+            return;
+        }
+        client.end();
+        res.status(200).json({ success: true, qres1 });
     });
 });
 
