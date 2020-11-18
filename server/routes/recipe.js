@@ -3,10 +3,7 @@ const router = express.Router();
 
 const multer = require('multer');
 var ffmpeg = require('fluent-ffmpeg');
-
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-const jwt = require('jsonwebtoken');
+const bcryptJwt = require('./module/bcrypt-jwt');
 
 const config = require('../config/key')
 const { Client } = require('pg');
@@ -525,49 +522,61 @@ router.post('/deleteRecipeInCart', (req, res) => {
 
 router.post('/signUp', async (req, res) => {
 
-    function convertHash(saltKey, orginPwd) {
-      return new Promise((resolve) => {
-        bcrypt.hash(orginPwd, saltKey, (err, hash) => {
-          if (err) return;
-          resolve(hash);
-        });
-      });
-    }
-
-    function generateSalt() {
-      return new Promise((resolve) => {
-        bcrypt.genSalt(saltRounds, (err, salt) => {
-          if (err) return;
-          resolve(salt);
-        });
-      });
-    }
-
-    const saltKey = await generateSalt();
-    req.body.password = await convertHash(saltKey, req.body.password);
+    const saltKey = await bcryptJwt.generateSalt();
+    req.body.password = await bcryptJwt.convertHash(saltKey, req.body.password);
 
     const client = new Client(config.postgresqlInfo);
     client.connect();
 
-    const sql1 = json2query({
+    const sql = json2query({
         mode : 'INSERT', 
         tableName : 'user_data', 
         column : ['id', 'name', 'password', 'register_datetime'],
         value : ['$1', '$2', '$3', "to_char(now(), 'yyyymmddhh24miss')"]
     })
-    const values1 = [req.body.id, req.body.name, req.body.password];
+    const values = [req.body.id, req.body.name, req.body.password];
 
-    client.query(sql1, values1, (err1, qres1) => {
-        if (err1) {
-            console.log(sql1);
-            console.log(values1);
-            console.log(err1);
+    client.query(sql, values, (err, qres) => {
+        if (err) {
             client.end();
+            res.status(200).json({ success: false, err, sql, values});
             return;
         }
         client.end();
-        res.status(200).json({ success: true, qres1 });
+        res.status(200).json({ success: true, qres });
     });
 });
+
+router.post('/signIn', (req, res) => {
+
+    const client = new Client(config.postgresqlInfo);
+    client.connect();
+
+    const sql = json2query({
+      mode: "SELECT",
+      tableName: "user_data",
+      column: ["*"],
+      where: ["and id = $1", "limit 1"],
+    });
+    const values = [req.body.id];
+
+    client.query(sql, values, async (err, qres) => {
+      if (err) {
+        client.end();
+        res.status(200).json({ success: false, err, sql, values });
+        return;
+      }
+      client.end();
+      const resPwd = qres.rows[0].password;
+      const inputPwd = req.body.password;
+      const isMatch = await bcryptJwt.comparePassword(inputPwd, resPwd);
+      if(isMatch){
+        const genToken = await bcryptJwt.generateToken(qres.rows[0]);
+        res.status(200).json({ loginSuccess: true, userId : req.body.id }).cookie("x_auth", genToken);
+      } else {
+        res.status(200).json({ loginSuccess: false, userId : req.body.id }); 
+      }
+    });
+})
 
 module.exports = router; 

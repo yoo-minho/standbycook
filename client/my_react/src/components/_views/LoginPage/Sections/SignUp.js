@@ -52,9 +52,12 @@ function SignUp() {
 
   const signUp = (signUpData) => {
     axios.post("/api/recipe/signUp",signUpData).then((response) => {
-      console.log(response)
-      setSignUpVisible(false);
-      message.success('회원가입이 완료되었습니다!')
+      if(response.data.success){
+        setSignUpVisible(false);
+        message.success('회원가입이 완료되었습니다!');
+      } else {
+        message.error('회원가입이 정상처리 되지 않았습니다!');
+      }
     });
   };
 

@@ -1,24 +1,51 @@
 import React, { useContext } from "react";
+import { message} from 'antd';
 import { LoginContext } from "../../Store/LoginStore.js";
 import "./SignIn.css";
+import axios from 'axios';
 
 function SignIn() {
   const { SignUpVisible, setSignUpVisible } = useContext(LoginContext);
 
   const showSignUpPage = () => setSignUpVisible(true);
 
+  const clickSignIn = (event) => {
+    event.preventDefault();
+
+    const f_id = event.target.f_id.value;
+    const f_pwd = event.target.password.value;
+
+    if (f_id === "" || f_pwd === "") {
+      message.warning("빈 값이 존재합니다. 내용을 입력해주세요!");
+      if (f_id === "") {
+        event.target.f_id.focus();
+      } else if (f_pwd === "") {
+        event.target.password.focus();
+      } 
+      return;
+    }
+
+    signIn({
+      id: f_id,
+      password: f_pwd,
+    });
+  };
+
+  const signIn = (signUpData) => {
+    axios.post("/api/recipe/signIn", signUpData).then((response) => {
+      if (response.data.success) {
+        message.success("회원가입이 완료되었습니다!");
+      } else {
+        message.error("회원가입이 정상처리 되지 않았습니다!");
+      }
+    });
+  };
+
   return (
-    <div
-      className="signin-section"
-      style={{ display: SignUpVisible ? "none" : "block" }}
-    >
-      <form id="signin-form" name="frmAgree">
+    <div className="signin-section">
+      <form id="signin-form" name="frmAgree" onSubmit={clickSignIn}>
         <div className="inp_initialization">
-          <input
-            type="text"
-            name="m_id"
-            placeholder="아이디를 입력해주세요"
-          />
+          <input type="text" name="f_id" placeholder="아이디를 입력해주세요" />
           <button type="button" className="btn_initialization">
             텍스트 삭제
           </button>
@@ -38,8 +65,7 @@ function SignIn() {
         </div>
         <div className="checkbox_save">
           <label>
-            <input type="checkbox" name="save_id"/>{" "}
-              자동로그인
+            <input type="checkbox" name="save_id" /> 자동로그인
           </label>
         </div>
         <button type="submit" className="btn_type1">
