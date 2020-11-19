@@ -555,7 +555,7 @@ router.post('/signIn', (req, res) => {
     const sql = json2query({
       mode: "SELECT",
       tableName: "user_data",
-      column: ["*"],
+      column: ["password"],
       where: ["and id = $1", "limit 1"],
     });
     const values = [req.body.id];
@@ -563,20 +563,73 @@ router.post('/signIn', (req, res) => {
     client.query(sql, values, async (err, qres) => {
       if (err) {
         client.end();
-        res.status(200).json({ success: false, err, sql, values });
+        res.status(200).json({ 
+            loginSuccess: false, 
+            loginMessage:'아이디가 존재하지 않습니다', 
+            err, sql, values });
         return;
       }
       client.end();
       const resPwd = qres.rows[0].password;
       const inputPwd = req.body.password;
       const isMatch = await bcryptJwt.comparePassword(inputPwd, resPwd);
+      console.log(resPwd,inputPwd,isMatch)
       if(isMatch){
-        const genToken = await bcryptJwt.generateToken(qres.rows[0]);
-        res.status(200).json({ loginSuccess: true, userId : req.body.id }).cookie("x_auth", genToken);
+        const genAccessToken = await bcryptJwt.generateToken(req.body.id, 0.1); //6초
+        const genRefreshToken = await bcryptJwt.generateToken(req.body.id, 60*24); //하루'
+        console.log('token',genAccessToken,genRefreshToken)
+        res.cookie("x_auth", genAccessToken)
+            .status(200).json({ 
+                loginSuccess: true, 
+                loginMessage:'로그인되었습니다',
+                userId : req.body.id });
       } else {
-        res.status(200).json({ loginSuccess: false, userId : req.body.id }); 
+        res.status(200).json({ 
+            loginSuccess: false, 
+            loginMessage:'비밀번호가 일치하지 않습니다',
+            userId : req.body.id }); 
       }
     });
+})
+
+router.post('/auth', async (req, res) => {
+    const reqToken = req.cookies.x_auth;
+    const tokenData = await bcryptJwt.findByToken(reqToken);
+    if (tokenData === 'JsonWebTokenError' || tokenData === 'NotBeforeError') {
+        //인증실패
+    } else if(tokenData === 'TokenExpiredError'){
+        //리프레시 토큰을 가져와서 인증해보고
+        //인증되면 액세스토큰 방행
+        //인증안되면 리프레시토큰, 액세스토큰 동시발행
+    } else {
+        //인증데이터 활용하여 데이터 가져오기
+        const client = new Client(config.postgresqlInfo);
+        client.connect();
+        const sql = json2query({
+            mode: "SELECT",
+            tableName: "user_data",
+            column: ["name, profile_url, role"],
+            where: ["and id = $1", "limit 1"],
+        });
+        const values = [tokenData.sub];
+        client.query(sql, values, (err, qres) => {
+            if (err) {
+                client.end();
+                res.status(200).json({isAuth: false, err, sql, values });
+                return;
+            }
+            client.end();
+            const userData = qres.rows[0];
+            res.status(200).json({
+                isAdmin : (userData.role === 0 ? false : true),
+                isAuth: true, 
+                id : userData.id,
+                name : userData.name,
+                role : userData.role,
+                image : userData.profile_url
+            });
+        });
+    }
 })
 
 module.exports = router; 

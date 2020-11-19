@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
 const jwt = require("jsonwebtoken");
+
+const saltRounds = 10;
+const _TOKEN_KEY = "secretToken";
 
 const bcryptJwt = function() {
   return {
@@ -8,6 +10,7 @@ const bcryptJwt = function() {
     generateSalt,
     comparePassword,
     generateToken,
+    findByToken,
   };
 
   function convertHash(saltKey, orginPwd) {
@@ -37,14 +40,29 @@ const bcryptJwt = function() {
     });
   }
 
-  function generateToken(userId) {
+  function generateToken(userId, expMin) {
     return new Promise((resolve) => {
-      console.log(userId)
-      const genToken = jwt.sign(userId, "secretToken");
-      console.log(genToken)
+      const genToken = jwt.sign({
+          sub:userId,
+          exp:Math.floor(Date.now() / 1000) + expMin*60
+        }, _TOKEN_KEY);
       resolve(genToken);
     });
   }
+
+  function findByToken(token){
+    return new Promise((resolve) => {
+        jwt.verify(token, _TOKEN_KEY, (err, decodedData) => {
+            resolve(
+                err && err.expiredAt ? 'TokenExpiredError' :
+                err && err.inner ? 'JsonWebTokenError' :
+                err && err.date ? 'NotBeforeError' :
+                decodedData
+            );
+        })
+    });
+  }
+  
 }();
 
 module.exports = bcryptJwt;

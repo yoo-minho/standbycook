@@ -33,10 +33,10 @@ function SignIn() {
 
   const signIn = (signUpData) => {
     axios.post("/api/recipe/signIn", signUpData).then((response) => {
-      if (response.data.success) {
-        message.success("회원가입이 완료되었습니다!");
+      if (response.data.loginSuccess) {
+        message.success(response.data.loginMessage);
       } else {
-        message.error("회원가입이 정상처리 되지 않았습니다!");
+        message.error(response.data.loginMessage);
       }
     });
   };

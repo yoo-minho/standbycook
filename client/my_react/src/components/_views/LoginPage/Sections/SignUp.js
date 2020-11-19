@@ -13,7 +13,7 @@ function SignUp() {
 
   const onBack = () => setSignUpVisible(false);
 
-  const formJoinSubmit = (event) => {
+  const clickSignUp = (event) => {
 
     event.preventDefault();
 
@@ -81,7 +81,7 @@ function SignUp() {
         </div>
       </header>
       <div id="appStyle" className="user_form section_join">
-        <form id="signup-form" name="frmAgree" onSubmit={formJoinSubmit}>
+        <form id="signup-form" name="frmAgree" onSubmit={clickSignUp}>
           <div className="user_reg">
             <div className="join_cell field_id">
               <div className="tit">
