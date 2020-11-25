@@ -6,7 +6,6 @@ import SignIn from './Sections/SignIn'
 import LoginStore from '../Store/LoginStore'
 
 const LoginPage = () => {
-
   return (
     <div className="login-back">
       <div className="login-layout">

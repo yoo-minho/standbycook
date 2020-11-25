@@ -558,32 +558,49 @@ router.post('/signIn', (req, res) => {
       column: ["password"],
       where: ["and id = $1", "limit 1"],
     });
-    const values = [req.body.id];
 
-    client.query(sql, values, async (err, qres) => {
+    const updateUserDataSql = json2query({
+        mode : 'UPDATE',
+        tableName : 'user_data',      
+        column : ['token', 'token_exp'],
+        value : ['$1', "to_char(now(), 'yyyymmddhh24miss')"],
+        where : ['and id = $2']
+    })
+
+    client.query(sql, [req.body.id], async (err, qres) => {
       if (err) {
         client.end();
         res.status(200).json({ 
             loginSuccess: false, 
             loginMessage:'아이디가 존재하지 않습니다', 
-            err, sql, values });
+            err, sql });
         return;
       }
-      client.end();
       const resPwd = qres.rows[0].password;
       const inputPwd = req.body.password;
       const isMatch = await bcryptJwt.comparePassword(inputPwd, resPwd);
       console.log(resPwd,inputPwd,isMatch)
       if(isMatch){
-        const genAccessToken = await bcryptJwt.generateToken(req.body.id, 0.1); //6초
+        const genAccessToken = await bcryptJwt.generateToken(req.body.id, 1); //1분
         const genRefreshToken = await bcryptJwt.generateToken(req.body.id, 60*24); //하루'
         console.log('token',genAccessToken,genRefreshToken)
-        res.cookie("x_auth", genAccessToken)
-            .status(200).json({ 
-                loginSuccess: true, 
-                loginMessage:'로그인되었습니다',
-                userId : req.body.id });
+        client.query(updateUserDataSql, [genRefreshToken, req.body.id], (err, qres) => {
+            client.end();
+            if (err) {
+                res.status(200).json({ 
+                    loginSuccess: false, 
+                    loginMessage:'로그인 처리가 제대로 되지 않았습니다!', 
+                    err, sql });
+            } else {
+                res.cookie("x_auth", genAccessToken)
+                .status(200).json({ 
+                    loginSuccess: true, 
+                    loginMessage:'로그인되었습니다',
+                    userId : req.body.id });
+            }
+        });
       } else {
+        client.end();
         res.status(200).json({ 
             loginSuccess: false, 
             loginMessage:'비밀번호가 일치하지 않습니다',
@@ -597,10 +614,42 @@ router.post('/auth', async (req, res) => {
     const tokenData = await bcryptJwt.findByToken(reqToken);
     if (tokenData === 'JsonWebTokenError' || tokenData === 'NotBeforeError') {
         //인증실패
+        res.status(200).json({isAuth: false, isAdmin : false, tokenData });
+        return;
     } else if(tokenData === 'TokenExpiredError'){
+        const client = new Client(config.postgresqlInfo);
+        client.connect();
+        const sql = json2query({
+            mode: "SELECT",
+            tableName: "user_data",
+            column: ["token, token_exp"],
+            where: ["and id = $1", "limit 1"],
+        });
+        client.query(sql, [tokenData.sub], (err, qres) => {
+            if (err) {
+                client.end();
+                res.status(200).json({isAuth: false, isAdmin : false, err, sql });
+                return;
+            }
+            client.end();
+            const userData = qres.rows[0];
+            const tokenData = await bcryptJwt.findByToken(userData.token);
+            if (tokenData === 'JsonWebTokenError' || tokenData === 'NotBeforeError' || tokenData === 'TokenExpiredError') {
+                res.status(200).json({isAuth: false, isAdmin : false, tokenData });
+                return;
+            } else {
+                const genAccessToken = await bcryptJwt.generateToken(req.body.id, 1); //1분
+                res.cookie("x_auth", genAccessToken)
+                .status(200).json({ isRenewToken: true });
+            }
+        });
+
+
         //리프레시 토큰을 가져와서 인증해보고
         //인증되면 액세스토큰 방행
         //인증안되면 리프레시토큰, 액세스토큰 동시발행
+        res.status(200).json({isAuth: false, isAdmin : false, tokenData});
+        return;
     } else {
         //인증데이터 활용하여 데이터 가져오기
         const client = new Client(config.postgresqlInfo);
@@ -611,17 +660,16 @@ router.post('/auth', async (req, res) => {
             column: ["name, profile_url, role"],
             where: ["and id = $1", "limit 1"],
         });
-        const values = [tokenData.sub];
-        client.query(sql, values, (err, qres) => {
+        client.query(sql, [tokenData.sub], (err, qres) => {
             if (err) {
                 client.end();
-                res.status(200).json({isAuth: false, err, sql, values });
+                res.status(200).json({isAuth: false, isAdmin : false, err, sql });
                 return;
             }
             client.end();
             const userData = qres.rows[0];
             res.status(200).json({
-                isAdmin : (userData.role === 0 ? false : true),
+                isAdmin : (userData.role === 0 ? true : false),
                 isAuth: true, 
                 id : userData.id,
                 name : userData.name,

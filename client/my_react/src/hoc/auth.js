@@ -14,7 +14,16 @@ export default function (SpecificComponent, option, adminRoute) {
       dispatch(auth()).then((response) => {
         const isLoginAuth = response.payload.isAuth;
         const isAdminAuth = response.payload.isAdmin;
-        if (option == null) {
+        const isRenewToken = response.payload.isRenewToken;
+
+        console.log('isLoginAuth', isLoginAuth);
+        console.log('isAdminAuth', isAdminAuth);
+        console.log('isRenewToken', isRenewToken);
+        console.log('option', option);
+
+        if(isRenewToken){
+          
+        } else if (option == null) {
           //모든 유저 통과
         } else if (option) {
           if (isLoginAuth) {
@@ -28,14 +37,12 @@ export default function (SpecificComponent, option, adminRoute) {
           } else {
             props.history.push("/login");
           }
-        } else if (!option) {
+        } else {
           if (isLoginAuth) {
             props.history.push("/");
           } else {
             //모든 비로그인 유저는 통과
           }
-        } else {
-          //이 케이스는 없음
         }
       });
     }, [dispatch, props.history]);

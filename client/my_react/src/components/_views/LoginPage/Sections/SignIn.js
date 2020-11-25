@@ -3,8 +3,9 @@ import { message} from 'antd';
 import { LoginContext } from "../../Store/LoginStore.js";
 import "./SignIn.css";
 import axios from 'axios';
+import { withRouter } from 'react-router-dom'
 
-function SignIn() {
+function SignIn(props) {
   const { SignUpVisible, setSignUpVisible } = useContext(LoginContext);
 
   const showSignUpPage = () => setSignUpVisible(true);
@@ -34,6 +35,8 @@ function SignIn() {
   const signIn = (signUpData) => {
     axios.post("/api/recipe/signIn", signUpData).then((response) => {
       if (response.data.loginSuccess) {
+        console.log(props)
+        props.history.push('/');
         message.success(response.data.loginMessage);
       } else {
         message.error(response.data.loginMessage);
@@ -88,4 +91,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default withRouter(SignIn);

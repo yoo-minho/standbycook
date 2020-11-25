@@ -14,10 +14,8 @@ function App() {
     <Router>
       <div>
         <Switch>
-
           <Route exact path="/" component={Auth(RecipePage, true, null)}/>
           <Route exact path="/login" component={Auth(LoginPage, false, null)}/>
-
         </Switch>
       </div>
     </Router>
