@@ -5,11 +5,13 @@ const saltRounds = 10;
 const _TOKEN_KEY = "secretToken";
 
 const bcryptJwt = function() {
+
   return {
     convertHash,
     generateSalt,
     comparePassword,
-    generateToken,
+    generateAccessToken,
+    generateRefreshToken,
     findByToken,
   };
 
@@ -40,11 +42,23 @@ const bcryptJwt = function() {
     });
   }
 
-  function generateToken(userId, expMin) {
+  function generateAccessToken(userId) {
+    //하루 
     return new Promise((resolve) => {
       const genToken = jwt.sign({
           sub:userId,
-          exp:Math.floor(Date.now() / 1000) + expMin*60
+          exp:Math.floor(Date.now() / 1000) + 24*60*60 
+        }, _TOKEN_KEY);
+      resolve(genToken);
+    });
+  }
+
+  function generateRefreshToken(userId) {
+    //2주
+    return new Promise((resolve) => {
+      const genToken = jwt.sign({
+          sub:userId,
+          exp:Math.floor(Date.now() / 1000) + 14*24*60*60 
         }, _TOKEN_KEY);
       resolve(genToken);
     });

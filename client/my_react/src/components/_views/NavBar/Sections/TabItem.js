@@ -8,30 +8,14 @@ import './TabItem.css'
 function TabItem(props) {
 
     const {
-        setAddPageVisible,
         RecipeListVisible, setRecipeListVisible,
         CartListVisible, setCartListVisible,
         setCookListVisible,
-        setGroceryInputList,
-        setRecipeStepInputList,
-        setCurrentPageInRecipeStep,
-        setTotalPageInRecipeStep,
-        setRecipeFields
     } = useContext(RecipeContext);
-
-    function showAddPageDrawer(){
-        
-        setGroceryInputList([]);
-        setRecipeStepInputList([]);
-        setRecipeFields([{"name": ["min"],"value": "10"},{"name": ["serving"],"value": "2"}]);
-        setCurrentPageInRecipeStep(0);
-        setTotalPageInRecipeStep(0);
-        setAddPageVisible(true);
-    }
 
     const changeTab = (e) => {
          if(props.gubun === 'add'){
-            showAddPageDrawer();
+            
         } else {
             setRecipeListVisible((props.gubun === 'recipe') ? true : false);
             setCartListVisible((props.gubun === 'cart') ? true : false);
@@ -50,26 +34,16 @@ function TabItem(props) {
     } else if(props.gubun === 'cart'){
         tabText = "장볼리스트";
         tabIcon = <ShoppingCartOutlined className="tab-icon"/>
-    } else if(props.gubun === 'fridge'){
-        tabText = "냉장고";
-        tabIcon = <DatabaseOutlined className="tab-icon"/>
     } else if(props.gubun === 'cook'){
-        tabText = "요리블로그";
+        tabText = "요리세줄일기";
         tabIcon = <ScheduleOutlined className="tab-icon"/>
-    } else if(props.gubun === 'add'){
-        tabText = (RecipeListVisible ? "레시피추가" : CartListVisible ? "식재료추가" : "글쓰기") ;
-        tabIcon = <PlusOutlined className="tab-icon"/>
-    } else if (props.gubun === 'timer'){
-        tabText = "요리타이머";
-        tabIcon = <FieldTimeOutlined className="tab-icon"/>
-    }  else {
+    } else {
         //pass
     }
 
     return (
         <>
-            {props.gubun === 'add' && <RecipeEditPage/>}
-            <Col className={tabClassName} span={6} onClick={changeTab}>
+            <Col className={tabClassName} span={8} onClick={changeTab}>
                 <div className="tab-icon-div">{tabIcon}</div>
                 <div className="tab-text">{tabText}</div>
             </Col>

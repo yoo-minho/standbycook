@@ -150,7 +150,7 @@ function RecipeEditPage() {
         <>
             <Drawer
                 title={DetailPageVisible?"레시피수정":"레시피추가"}
-                placement="bottom"
+                placement="right"
                 width="100%"
                 height="100%"
                 closable={true}

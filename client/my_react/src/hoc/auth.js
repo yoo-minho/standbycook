@@ -21,9 +21,7 @@ export default function (SpecificComponent, option, adminRoute) {
         console.log('isRenewToken', isRenewToken);
         console.log('option', option);
 
-        if(isRenewToken){
-          
-        } else if (option == null) {
+        if (option == null) {
           //모든 유저 통과
         } else if (option) {
           if (isLoginAuth) {
@@ -44,6 +42,8 @@ export default function (SpecificComponent, option, adminRoute) {
             //모든 비로그인 유저는 통과
           }
         }
+
+        localStorage.setItem('userData', JSON.stringify(response.payload));
       });
     }, [dispatch, props.history]);
 

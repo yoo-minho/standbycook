@@ -1,52 +1,113 @@
-import React, { useContext } from 'react'
-import { RecipeContext } from '../Store/RecipeStore.js'
-import { Skeleton, Drawer, Card, Avatar, List } from 'antd';
+import React, { useContext } from "react";
+import { RecipeContext } from "../Store/RecipeStore.js";
+import { Skeleton, Drawer, Card, Avatar, List } from "antd";
+import { message } from "antd";
+import RecipeEditPage from "../RecipeEditPage/RecipeEditPage";
+import axios from "axios";
+import { withRouter } from "react-router-dom";
 
-function MyPage() {
+function MyPage(props) {
+  const {
+    setAddPageVisible,
+    setGroceryInputList,
+    setRecipeStepInputList,
+    setCurrentPageInRecipeStep,
+    setTotalPageInRecipeStep,
+    setRecipeFields,
+  } = useContext(RecipeContext);
 
-    const {
-        MyPageVisible, setMyPageVisible,
-    } = useContext(RecipeContext);
+  const { Meta } = Card;
+  const { MyPageVisible, setMyPageVisible } = useContext(RecipeContext);
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const codeArray = ["EDIT", "REGIST", "LOGOUT", "SETTING", "HELP"];
+  const buttonTitle = {
+    EDIT: "개인정보 수정",
+    REGIST: "레시피 추가",
+    LOGOUT: "로그아웃",
+    SETTING: "설정",
+    HELP: "도움말",
+  };
 
-    const onClose = () => setMyPageVisible(false)
+  const buttonEvent = {
+    EDIT: () => console.log("EDIT"),
+    REGIST: () => showAddPageDrawer(),
+    LOGOUT: () => logout(),
+    SETTING: () => console.log("SETTING"),
+    HELP: () => console.log("HELP"),
+  };
 
-    const { Meta } = Card;
+  const logout = () => {
+    axios.post("/api/recipe/signOut").then((response) => {
+      if (response.data.loginoutSuccess) {
+        props.history.push("/login");
+        message.success(response.data.loginoutMessage);
+      } else {
+        message.error(response.data.loginoutMessage);
+      }
+    });
+  };
 
-    const data = [
-        '개인정보 수정',
-        '로그아웃',
-        '설정',
-        '도움말',
-      ];
+  function showAddPageDrawer() {
+    setGroceryInputList([]);
+    setRecipeStepInputList([]);
+    setRecipeFields([
+      { name: ["min"], value: "10" },
+      { name: ["serving"], value: "2" },
+    ]);
+    setCurrentPageInRecipeStep(0);
+    setTotalPageInRecipeStep(0);
+    setMyPageVisible(false);
+    setAddPageVisible(true);
+  }
 
-    return (
-        <Drawer
-            title="My Page"
-            placement="right"
-            width="70%"
-            closable={true}
-            onClose={onClose}
-            visible={MyPageVisible}
-            bodyStyle={{ padding: '0' }}
-        >
-            <Card style={{ width: '100%'}} >
-                <Skeleton loading={false} avatar active>
-                    <Meta
-                        avatar={
-                            <Avatar size={64} src="https://cdn.mediasr.co.kr/news/photo/201902/51097_10784_4113.jpg" />
-                        }
-                        title="유민호"
-                        description="먹는 것을 좋아합니다. 너두?"
-                    />
-                </Skeleton>
-            </Card>
-            <List
-            size="large"
-            dataSource={data}
-            renderItem={item => <List.Item>{item}</List.Item>}
+  return (
+    <>
+      <RecipeEditPage />
+      <Drawer
+        title="개인 페이지"
+        placement="right"
+        width="70%"
+        closable={true}
+        onClose={() => setMyPageVisible(false)}
+        visible={MyPageVisible}
+        bodyStyle={{ padding: "0" }}
+      >
+        <Card style={{ width: "100%" }}>
+          <Skeleton loading={false} avatar active>
+            <Meta
+              avatar={
+                userData.image ? (
+                  <Avatar size={64} src={userData.image}></Avatar>
+                ) : (
+                  <Avatar
+                    style={{
+                      backgroundColor: "#00a2ae",
+                      verticalAlign: "middle",
+                    }}
+                    size={64}
+                    gap={4}
+                  >
+                    {userData.name.substring(0, 3)}
+                  </Avatar>
+                )
+              }
+              title={userData.name}
+              description="요리초보 파이팅!"
             />
-        </Drawer>
-    )
+          </Skeleton>
+        </Card>
+        <List
+          size="large"
+          dataSource={codeArray}
+          renderItem={(code) => (
+            <List.Item onClick={buttonEvent[code]}>
+              {buttonTitle[code]}
+            </List.Item>
+          )}
+        />
+      </Drawer>
+    </>
+  );
 }
 
-export default MyPage
+export default withRouter(MyPage);
