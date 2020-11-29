@@ -19,6 +19,9 @@ function MyPage(props) {
   const { Meta } = Card;
   const { MyPageVisible, setMyPageVisible } = useContext(RecipeContext);
   const userData = JSON.parse(localStorage.getItem("userData"));
+
+  console.log(userData)
+
   const codeArray = ["EDIT", "REGIST", "LOGOUT", "SETTING", "HELP"];
   const buttonTitle = {
     EDIT: "개인정보 수정",
@@ -74,6 +77,7 @@ function MyPage(props) {
       >
         <Card style={{ width: "100%" }}>
           <Skeleton loading={false} avatar active>
+            {userData && userData.isAuth && 
             <Meta
               avatar={
                 userData.image ? (
@@ -87,13 +91,13 @@ function MyPage(props) {
                     size={64}
                     gap={4}
                   >
-                    {userData.name.substring(0, 3)}
+                    {userData.name}
                   </Avatar>
                 )
               }
               title={userData.name}
               description="요리초보 파이팅!"
-            />
+            />}
           </Skeleton>
         </Card>
         <List

@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useEffect } from "react";
 import { message} from 'antd';
 import { LoginContext } from "../../Store/LoginStore.js";
 import "./SignUp.css";
@@ -6,10 +6,27 @@ import axios from 'axios';
 
 function SignUp() {
 
+  console.log('SignUp.js');
+
   const { SignUpVisible, setSignUpVisible } = useContext(LoginContext);
 
+  const idInput = useRef();
+  const passwordInput = useRef();
+  const password2Input = useRef();
   const agrmtChkInput = useRef();
   const privateChkInput = useRef();
+
+  useEffect(() => {
+    initSignUp();
+  }, [SignUpVisible])
+
+  const initSignUp = () => {
+    idInput.current.value = "";
+    passwordInput.current.value = "";
+    password2Input.current.value = "";
+    agrmtChkInput.current.checked = false;
+    privateChkInput.current.checked = false;
+  }
 
   const onBack = () => setSignUpVisible(false);
 
@@ -41,6 +58,8 @@ function SignUp() {
       message.warning('회원가입을 위해서 이용약관에 동의가 필요합니다!');
       return;
     }
+
+    event.target.reset();
     
     signUp({
       id: f_id,
@@ -66,6 +85,82 @@ function SignUp() {
     agrmtChkInput.current.checked = b_allCheck;
     privateChkInput.current.checked = b_allCheck;
   };
+
+  const confirmId = (event) => {
+    event.preventDefault();
+    const txtGuideEl = idInput.current.parentNode.nextElementSibling;
+    const txtCase2El = txtGuideEl.querySelectorAll(".txt_case2")[0];
+
+    const inputIdValue = idInput.value;
+
+    axios.post("/api/recipe/isExistsId",{id: inputIdValue}).then((response) => {
+      if(response.data.isExistsId){
+        message.error('중복된 아이디가 존재합니다!');
+        txtCase2El.classList.remove('good');
+        txtCase2El.classList.add('bad');
+      } else {
+        message.success('중복된 아이디가 존재하지 않습니다!');
+        txtCase2El.classList.remove('bad');
+        txtCase2El.classList.add('good');
+      }
+    });
+  }
+
+  const changeInputId = (key) => {
+
+    console.log(key)
+
+    let inputEl = idInput.current;
+    if('ID' === key){
+      inputEl = idInput.current;
+    } else if('PASSWORD' == key){
+      inputEl = passwordInput.current;
+    } else if('PASSWORD2' == key){
+      inputEl = password2Input.current;
+    } else {
+      inputEl = idInput.current;
+    }
+
+    if(!inputEl) return; 
+
+    const inputValue = inputEl.value;
+    const txtGuideEl = inputEl.parentNode.nextElementSibling;
+    txtGuideEl.classList.add('on');
+
+    const txtCase1El = txtGuideEl.querySelectorAll(".txt_case1")[0];
+    const txtCase2El = txtGuideEl.querySelectorAll(".txt_case2")[0];
+    const txtCase3El = txtGuideEl.querySelectorAll(".txt_case3")[0];
+
+    if('ID' === key){
+      if(inputValue.length > 6){
+        txtCase1El.classList.remove('bad');
+        txtCase1El.classList.add('good');
+      } else {
+        txtCase1El.classList.remove('good');
+        txtCase1El.classList.add('bad');
+      }
+      txtCase2El.classList.remove('good');
+      txtCase2El.classList.remove('bad');
+    } else if ('PASSWORD' == key){
+      if(inputValue.length > 10){
+        txtCase1El.classList.remove('bad');
+        txtCase1El.classList.add('good');
+      } else {
+        txtCase1El.classList.remove('good');
+        txtCase1El.classList.add('bad');
+      }
+    } else if ('PASSWORD2' == key){
+      if(inputValue.length > 10){
+        txtCase1El.classList.remove('bad');
+        txtCase1El.classList.add('good');
+      } else {
+        txtCase1El.classList.remove('good');
+        txtCase1El.classList.add('bad');
+      }
+    } else {
+      //pass
+    }
+  }
 
   return (
     <div
@@ -97,16 +192,16 @@ function SignUp() {
                   size="13"
                   maxLength="50"
                   required=""
-                  placeholder="예 : marketkurly12"
+                  placeholder="예 : dellose"
                   label="아이디"
+                  ref={idInput}
+                  onChange={changeInputId('ID')}
                 />
-                <button className="btn default">중복확인</button>
+                <button className="btn default" onClick={confirmId}>중복확인</button>
                 <input type="hidden" name="id_chk" />
               </div>
-              <p className="txt_guide" style={{ display: "none" }}>
-                <span className="txt txt_case1">
-                  6자 이상의 영문 혹은 영문과 숫자를 조합
-                </span>
+              <p className="txt_guide">
+                <span className="txt txt_case1">6자 이상의 영문 혹은 영문과 숫자를 조합</span>
                 <span className="txt txt_case2">아이디 중복확인</span>
               </p>
             </div>
@@ -126,8 +221,10 @@ function SignUp() {
                   placeholder="비밀번호를 입력해주세요"
                   label="비밀번호"
                   autoComplete="on"
+                  ref={passwordInput}
+                  onChange={changeInputId('ID')}
                 />
-                <p className="txt_guide" style={{ display: "none" }}>
+                <p className="txt_guide">
                   <span className="txt txt_case1">10자 이상 입력</span>
                   <span className="txt txt_case2">
                     영문/숫자/특수문자(공백 제외)만 허용하며, 2개 이상 조합
@@ -156,8 +253,10 @@ function SignUp() {
                   label="비밀번호 확인"
                   className="bad"
                   autoComplete="on"
+                  ref={password2Input}
+                  onChange={changeInputId('ID')}
                 />
-                <p className="txt_guide" style={{ display: "none" }}>
+                <p className="txt_guide">
                   <span className="txt txt_case1 bad">
                     동일한 비밀번호를 입력해주세요
                   </span>

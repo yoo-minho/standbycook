@@ -209,3 +209,57 @@
     background-color: #5f0080;
     color: #fff;
 }
+
+.user_reg .txt_guide {
+    display: none;
+    padding: 9px 0 0;
+    margin-bottom: -1px;
+    font-size: 12px;
+    color: #666;
+    line-height: 18px;
+    clear: both;
+}
+
+.user_reg .txt_guide.on {
+    display: block;
+}
+
+.signup-section .user_reg .txt_guide .txt {
+    display: block;
+    word-break: break-all;
+    letter-spacing: -.3px;
+}
+
+.signup-section .user_reg .txt_guide .txt.good {
+    color: #0f851a;
+}
+
+.signup-section .user_reg .txt_guide .txt.bad {
+    color: #b3130b;
+}
+
+.signup-section .user_reg .txt_guide .txt.bad:before {
+    content: '\2715';
+    display: inline-block;
+    padding-right: 3px;
+    font-size: 12px;
+    vertical-align: 0;
+}
+
+.signup-section .field_id .txt_guide .txt:before,
+.signup-section .field_pw .txt_guide .txt:before,
+.signup-section .field_newpw .txt_guide .txt:before {
+    content: '\2022';
+    display: inline-block;
+    padding-right: 2px;
+    font-size: 12px;
+    vertical-align: 0;
+}
+
+.signup-section .user_reg .txt_guide .txt.good:before {
+    content: '\2713';
+    display: inline-block;
+    padding: 0 4px 0 2px;
+    font-size: 12px;
+    vertical-align: 0;
+}

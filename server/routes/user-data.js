@@ -4,12 +4,34 @@ const common = require("./module/common");
 
 const userData = (function () {
   return {
+    isExistsIdYn,
     findPassword,
     findProfileData,
     findTokenData,
     updateTokenData,
     insertData,
   };
+
+  function isExistsIdYn(userId) {
+    return new Promise((resolve) => {
+      const client = new Client(config.postgresqlInfo);
+      client.connect();
+      const sql = common.json2query({
+        mode: "SELECT",
+        tableName: "user_data",
+        column: ["1"],
+        where: ["and id = $1", "limit 1"],
+      });
+      client.query(sql, [userId], (err, qres) => {
+        client.end();
+        if (err) {
+          resolve("N");
+        } else {
+          resolve(qres.rows[0] ? "Y" : "N");
+        }
+      });
+    });
+  }
 
   function findPassword(userId) {
     return new Promise((resolve) => {
@@ -26,7 +48,7 @@ const userData = (function () {
         if (err) {
           resolve("");
         } else {
-          resolve(qres.rows[0].password);
+          resolve(qres.rows && qres.rows[0] ? qres.rows[0].password : "");
         }
       });
     });

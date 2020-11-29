@@ -639,6 +639,13 @@ router.post("/deleteRecipeInCart", (req, res) => {
   });
 });
 
+router.post("/isExistsId", async (req, res) => {
+    const isExistsIdYn = await userData.isExistsIdYn(
+      req.body.id
+    );
+    res.status(200).json({isExistsId : (isExistsIdYn === 'Y')});
+  });
+
 router.post("/signUp", async (req, res) => {
   const saltKey = await bcryptJwt.generateSalt();
   const secretPassword = await bcryptJwt.convertHash(

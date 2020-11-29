@@ -77,15 +77,6 @@ function SignIn(props) {
         <div className="btn_type2 btn_member" onClick={showSignUpPage}>
           <span className="txt_type">회원가입</span>
         </div>
-        <div className="login_search">
-          <a href="/m2/mem/find_id.php" className="link">
-            아이디 찾기
-          </a>
-          <span className="bar"></span>
-          <a href="/m2/mem/find_pwd.php" className="link">
-            비밀번호 찾기
-          </a>
-        </div>
       </form>
     </div>
   );
