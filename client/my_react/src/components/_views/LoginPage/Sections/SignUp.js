@@ -1,89 +1,82 @@
 import React, { useContext, useRef, useEffect } from "react";
-import { message} from 'antd';
+import { message } from "antd";
 import { LoginContext } from "../../Store/LoginStore.js";
 import "./SignUp.css";
-import axios from 'axios';
+import axios from "axios";
 
 function SignUp() {
-
-  console.log('SignUp.js');
+  console.log("SignUp.js");
 
   const { SignUpVisible, setSignUpVisible } = useContext(LoginContext);
 
+  const signForm = useRef();
   const idInput = useRef();
   const passwordInput = useRef();
   const password2Input = useRef();
-  const agrmtChkInput = useRef();
-  const privateChkInput = useRef();
+  const nickInput = useRef();
+
+  const inputKeyArray = ["ID", "PASSWORD", "PASSWORD2", "NICK"];
 
   useEffect(() => {
     initSignUp();
-  }, [SignUpVisible])
+  }, [SignUpVisible]);
 
   const initSignUp = () => {
-    idInput.current.value = "";
-    passwordInput.current.value = "";
-    password2Input.current.value = "";
-    agrmtChkInput.current.checked = false;
-    privateChkInput.current.checked = false;
-  }
+    initInput(inputKeyArray)
+    getInputElByName("agree_allcheck").checked = false;
+    getInputElByName("agrmt_chk").checked = false;
+    getInputElByName("private_chk").checked = false;
+  };
+
+  const getInputElByName = (name) => signForm.current.querySelectorAll('[name='+name+']')[0];
+  const getCellElByClassName = (className) => signForm.current.querySelectorAll('.join_cell.field_'+className)[0];
+  const getCellInputElByClassName = (className) => signForm.current.querySelectorAll('.join_cell.field_'+className+' input')[0];
+  const isMustCellElByClassName = (className) => (getCellElByClassName(className).querySelectorAll('.screen_out').length > 0);
+  const isLimitByCellTxtGuide = (className) => (getCellElByClassName(className).querySelectorAll('.txt.bad').length > 0);
+  const isEmptyInput = (keyArray) =>
+    keyArray.filter(
+      (key) =>
+        isMustCellElByClassName(key) &&
+        getCellInputElByClassName(key).value.trim() === ""
+    ).length > 0;
+  const isLimitInput = (keyArray) =>
+    keyArray.filter(
+      (key) =>
+        isMustCellElByClassName(key) &&
+        isLimitByCellTxtGuide(key)
+    ).length > 0;
+  const isDisagree = () => (!getInputElByName("agrmt_chk").checked || !getInputElByName("private_chk").checked);
 
   const onBack = () => setSignUpVisible(false);
 
   const clickSignUp = (event) => {
-
     event.preventDefault();
 
-    const f_id = event.target.f_id.value;
-    const f_pwd = event.target.password.value;
-    const f_pwd2 = event.target.password2.value;
-    const f_name = event.target.f_name.value;
+    if(isEmptyInput(inputKeyArray)) return message.warning("빈값을 채워주세요!");
+    if(isLimitInput(inputKeyArray)) return message.warning("조건을 만족해주세요!");
+    if(isDisagree()) return message.warning("회원가입을 위해서 이용약관에 동의가 필요합니다!");
 
-    if(f_id === "" || f_pwd === "" || f_pwd2 === "" || f_name === ""){
-      message.warning('빈 값이 존재합니다. 내용을 입력해주세요!');
-      if(f_id === "") { event.target.f_id.focus(); } 
-      else if(f_pwd === "") { event.target.password.focus(); }
-      else if(f_pwd2 === "") { event.target.password2.focus(); }
-      else if(f_name === "") { event.target.f_name.focus(); } 
-      return;
-    }
-
-    if(f_pwd !== f_pwd2){
-      message.warning('비밀번호가 다릅니다!');
-      event.target.password2.focus();
-      return;
-    }
-
-    if(!agrmtChkInput.current.checked || !privateChkInput.current.checked){
-      message.warning('회원가입을 위해서 이용약관에 동의가 필요합니다!');
-      return;
-    }
-
-    event.target.reset();
-    
     signUp({
-      id: f_id,
-      name: f_name,
-      password: f_pwd,
+      id: event.target.f_id.value,
+      name: event.target.f_name.value,
+      password: event.target.password.value,
     });
-
   };
 
   const signUp = (signUpData) => {
-    axios.post("/api/recipe/signUp",signUpData).then((response) => {
-      if(response.data.success){
+    axios.post("/api/recipe/signUp", signUpData).then((response) => {
+      if (response.data.success) {
         setSignUpVisible(false);
-        message.success('회원가입이 완료되었습니다!');
+        message.success("회원가입이 완료되었습니다!");
       } else {
-        message.error('회원가입이 정상처리 되지 않았습니다!');
+        message.error("회원가입이 정상처리 되지 않았습니다!");
       }
     });
   };
 
   const clickAllCheck = (event) => {
-    const b_allCheck = event.target.checked;
-    agrmtChkInput.current.checked = b_allCheck;
-    privateChkInput.current.checked = b_allCheck;
+    getInputElByName("agrmt_chk").checked = event.target.checked;
+    getInputElByName("private_chk").checked = event.target.checked;
   };
 
   const confirmId = (event) => {
@@ -93,72 +86,92 @@ function SignUp() {
 
     const inputIdValue = idInput.value;
 
-    axios.post("/api/recipe/isExistsId",{id: inputIdValue}).then((response) => {
-      if(response.data.isExistsId){
-        message.error('중복된 아이디가 존재합니다!');
-        txtCase2El.classList.remove('good');
-        txtCase2El.classList.add('bad');
-      } else {
-        message.success('중복된 아이디가 존재하지 않습니다!');
-        txtCase2El.classList.remove('bad');
-        txtCase2El.classList.add('good');
-      }
-    });
-  }
+    axios
+      .post("/api/recipe/isExistsId", { id: inputIdValue })
+      .then((response) => {
+        if (response.data.isExistsId) {
+          message.error("중복된 아이디가 존재합니다!");
+          updateGuideCase(txtCase2El, "BAD");
+        } else {
+          message.success("중복된 아이디가 존재하지 않습니다!");
+          updateGuideCase(txtCase2El, "GOOD");
+        }
+      });
+  };
 
-  const changeInputId = (key) => {
+  const initInput = (keyArray) => keyArray.forEach((key) => changeInput(key, ""))
 
-    console.log(key)
+  const changeInput = (changeKey, changeValue) => {
 
-    let inputEl = idInput.current;
-    if('ID' === key){
-      inputEl = idInput.current;
-    } else if('PASSWORD' == key){
-      inputEl = passwordInput.current;
-    } else if('PASSWORD2' == key){
-      inputEl = password2Input.current;
+    let inputEl = ("ID" === changeKey
+      ? idInput
+      : "PASSWORD" === changeKey
+      ? passwordInput
+      : "PASSWORD2" === changeKey
+      ? password2Input
+      : "NICK" === changeKey
+      ? nickInput
+      : ""
+    ).current;
+
+    if (!inputEl) return;
+
+    const txtGuideEl = inputEl.parentNode.nextElementSibling;
+
+    if (changeValue != undefined) {
+      inputEl.value = changeValue;
+      (changeValue == "") && txtGuideEl.classList.remove("on");
     } else {
-      inputEl = idInput.current;
+      txtGuideEl.classList.add("on");
     }
 
-    if(!inputEl) return; 
-
-    const inputValue = inputEl.value;
-    const txtGuideEl = inputEl.parentNode.nextElementSibling;
-    txtGuideEl.classList.add('on');
-
+    const inputValue = inputEl.value.trim();
     const txtCase1El = txtGuideEl.querySelectorAll(".txt_case1")[0];
     const txtCase2El = txtGuideEl.querySelectorAll(".txt_case2")[0];
-    const txtCase3El = txtGuideEl.querySelectorAll(".txt_case3")[0];
 
-    if('ID' === key){
-      if(inputValue.length > 6){
-        txtCase1El.classList.remove('bad');
-        txtCase1El.classList.add('good');
-      } else {
-        txtCase1El.classList.remove('good');
-        txtCase1El.classList.add('bad');
-      }
-      txtCase2El.classList.remove('good');
-      txtCase2El.classList.remove('bad');
-    } else if ('PASSWORD' == key){
-      if(inputValue.length > 10){
-        txtCase1El.classList.remove('bad');
-        txtCase1El.classList.add('good');
-      } else {
-        txtCase1El.classList.remove('good');
-        txtCase1El.classList.add('bad');
-      }
-    } else if ('PASSWORD2' == key){
-      if(inputValue.length > 10){
-        txtCase1El.classList.remove('bad');
-        txtCase1El.classList.add('good');
-      } else {
-        txtCase1El.classList.remove('good');
-        txtCase1El.classList.add('bad');
-      }
+    if ("ID" === changeKey) {
+      updateGuideCaseByTextLimit(txtCase1El, 6);
+      updateGuideCase(txtCase2El);
+    } else if ("PASSWORD" == changeKey) {
+      updateGuideCaseByTextLimit(txtCase1El, 10);
+    } else if ("PASSWORD2" == changeKey) {
+      updateGuideCaseByPasswordCompare();
+    } else if ("NICK" == changeKey) {
+      updateGuideCaseByTextLimit(txtCase1El, 3);
     } else {
       //pass
+    }
+
+    function updateGuideCaseByPasswordCompare() {
+      if (passwordInput.current.value === password2Input.current.value) {
+        updateGuideCase(txtCase1El, "GOOD");
+      } else {
+        updateGuideCase(txtCase1El, "BAD");
+      }
+    }
+
+    function updateGuideCaseByTextLimit(targerEl, limitCount) {
+      if (inputValue.length == 0) {
+        updateGuideCase(targerEl);
+      } else if (inputValue.length > limitCount) {
+        updateGuideCase(targerEl, "GOOD");
+      } else {
+        updateGuideCase(targerEl, "BAD");
+      }
+    }
+  };
+
+  const updateGuideCase = (targerEl, mode) => {
+    if (targerEl == null) return;
+    if ("GOOD" === mode) {
+      targerEl.classList.add("good");
+      targerEl.classList.remove("bad");
+    } else if ("BAD" === mode) {
+      targerEl.classList.remove("good");
+      targerEl.classList.add("bad");
+    } else {
+      targerEl.classList.remove("good");
+      targerEl.classList.remove("bad");
     }
   }
 
@@ -176,9 +189,9 @@ function SignUp() {
         </div>
       </header>
       <div id="appStyle" className="user_form section_join">
-        <form id="signup-form" name="frmAgree" onSubmit={clickSignUp}>
+        <form id="signup-form" name="frmAgree" ref={signForm} onSubmit={clickSignUp}>
           <div className="user_reg">
-            <div className="join_cell field_id">
+            <div className="join_cell field_ID">
               <div className="tit">
                 아이디
                 <span className="ico">
@@ -195,17 +208,20 @@ function SignUp() {
                   placeholder="예 : dellose"
                   label="아이디"
                   ref={idInput}
-                  onChange={changeInputId('ID')}
+                  onChange={() => changeInput("ID")}
                 />
-                <button className="btn default" onClick={confirmId}>중복확인</button>
-                <input type="hidden" name="id_chk" />
+                <button className="btn default" onClick={confirmId}>
+                  중복확인
+                </button>
               </div>
               <p className="txt_guide">
-                <span className="txt txt_case1">6자 이상의 영문 혹은 영문과 숫자를 조합</span>
+                <span className="txt txt_case1">
+                  6자 이상의 영문 혹은 영문과 숫자를 조합
+                </span>
                 <span className="txt txt_case2">아이디 중복확인</span>
               </p>
             </div>
-            <div className="join_cell field_pw">
+            <div className="join_cell field_PASSWORD">
               <div className="tit">
                 비밀번호
                 <span className="ico">
@@ -222,20 +238,14 @@ function SignUp() {
                   label="비밀번호"
                   autoComplete="on"
                   ref={passwordInput}
-                  onChange={changeInputId('ID')}
+                  onChange={() => changeInput("PASSWORD")}
                 />
-                <p className="txt_guide">
-                  <span className="txt txt_case1">10자 이상 입력</span>
-                  <span className="txt txt_case2">
-                    영문/숫자/특수문자(공백 제외)만 허용하며, 2개 이상 조합
-                  </span>
-                  <span className="txt txt_case3">
-                    동일한 숫자 3개 이상 연속 사용 불가
-                  </span>
-                </p>
               </div>
+              <p className="txt_guide">
+                <span className="txt txt_case1">10자 이상 입력</span>
+              </p>
             </div>
-            <div className="join_cell field_repw">
+            <div className="join_cell field_PASSWORD2">
               <div className="tit">
                 비밀번호 확인
                 <span className="ico">
@@ -254,16 +264,16 @@ function SignUp() {
                   className="bad"
                   autoComplete="on"
                   ref={password2Input}
-                  onChange={changeInputId('ID')}
+                  onChange={() => changeInput("PASSWORD2")}
                 />
-                <p className="txt_guide">
-                  <span className="txt txt_case1 bad">
-                    동일한 비밀번호를 입력해주세요
-                  </span>
-                </p>
               </div>
+              <p className="txt_guide">
+                <span className="txt txt_case1 bad">
+                  동일한 비밀번호를 입력해주세요
+                </span>
+              </p>
             </div>
-            <div className="join_cell">
+            <div className="join_cell field_NICK">
               <div className="tit">
                 닉네임
                 <span className="ico">
@@ -279,8 +289,15 @@ function SignUp() {
                   required=""
                   placeholder="닉네임을 입력해주세요"
                   label="닉네임"
+                  ref={nickInput}
+                  onChange={() => changeInput("NICK")}
                 />
               </div>
+              <p className="txt_guide">
+                <span className="txt txt_case1">
+                  3자 이상 입력
+                </span>
+              </p>
             </div>
           </div>
           <div className="user_reg reg_agree">
@@ -305,7 +322,6 @@ function SignUp() {
                     <input
                       type="checkbox"
                       name="agrmt_chk"
-                      ref={agrmtChkInput}
                     />
                     <span className="ico"></span>이용약관 동의{" "}
                     <span className="extra">(필수)</span>
@@ -319,7 +335,6 @@ function SignUp() {
                     <input
                       type="checkbox"
                       name="private_chk"
-                      ref={privateChkInput}
                     />
                     <span className="ico"></span>개인정보처리방침 동의{" "}
                     <span className="extra">(필수)</span>
