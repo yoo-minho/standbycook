@@ -11,10 +11,8 @@ export function auth() {
   });
 }
 
-export function loginUser(dataToSubmit) {
-  const request = axios
-    .post("/api/users/login", dataToSubmit)
-    .then((response) => response.data);
+export function signUp(signUpData) {
+  const request = axios.post("/api/recipe/signUp", signUpData).then((response) => response.data);
   return {
     type: LOGIN_USER,
     payload: request,

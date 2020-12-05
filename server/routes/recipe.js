@@ -640,11 +640,14 @@ router.post("/deleteRecipeInCart", (req, res) => {
 });
 
 router.post("/isExistsId", async (req, res) => {
-    const isExistsIdYn = await userData.isExistsIdYn(
-      req.body.id
-    );
-    res.status(200).json({isExistsId : (isExistsIdYn === 'Y')});
-  });
+  const isExistsIdYn = await userData.isExistsIdYn(req.body.value);
+  res.status(200).json({ isExists: isExistsIdYn === "Y" });
+});
+
+router.post("/isExistsNick", async (req, res) => {
+  const isExistsNickYn = await userData.isExistsNickYn(req.body.value);
+  res.status(200).json({ isExists: isExistsNickYn === "Y" });
+});
 
 router.post("/signUp", async (req, res) => {
   const saltKey = await bcryptJwt.generateSalt();

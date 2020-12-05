@@ -39,7 +39,7 @@
     text-indent: -9999px;
 }
 
-.signin-section [name=password],
+.signin-section [name=f_password],
 .btn_member {
     margin-top: 10px;
 }

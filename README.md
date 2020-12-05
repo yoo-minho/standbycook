@@ -1,4 +1,21 @@
-# boiler-plate
+# 장볼레시피
+
+레시피 보고 장바구니에 담는다!
+
+# 개발이슈
+
+1. 로그인 - 이슈없음
+2. 회원가입 - 이슈없음
+3. 로그아웃 - 이슈없음
+4. 타이머 - 이슈없음
+5. 레시피추가 - 빈값처리,부재료처리, 대표이미지처리, 이미지처리, 등록시순서보장, 식재료단위
+6. 레시피조회 - 장바구니담기안됨
+7. 레시피수정 - 수정안됨, 순서바꾸기안됨
+8. 장볼리스트 - 레시피조회안됨, 카테고리별정렬, 부재료정리, 네이버쇼핑장바구니처럼
+9. 요리세줄일기 - 준비중처리
+10. 설정 - 준비중처리
+
+# 설치이슈
 
 1. bcrypt 이슈
 - npm install --global windows-build-tools
@@ -17,6 +34,3 @@
 npm install --global --production windows-build-tools
 npm install --global node-gyp
 npm install -g pg-native
-
-1. antd - form.list data를 채우는 형태로 쓰기 힘드니 쓰지말것
-2. update시 새로 추가되는 것과 수정되는 것을 구분하는 방법

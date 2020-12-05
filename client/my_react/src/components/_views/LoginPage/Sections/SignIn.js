@@ -1,42 +1,61 @@
-import React, { useContext } from "react";
-import { message} from 'antd';
+import React, { useContext, useEffect, useRef, useCallback } from "react";
+import { withRouter } from "react-router-dom";
+import { message } from "antd";
+import axios from "axios";
 import { LoginContext } from "../../Store/LoginStore.js";
+import SignHelper from "./SignHelper";
 import "./SignIn.css";
-import axios from 'axios';
-import { withRouter } from 'react-router-dom'
 
 function SignIn(props) {
-  const { SignUpVisible, setSignUpVisible } = useContext(LoginContext);
+  console.log("SignIn.js");
 
-  const showSignUpPage = () => setSignUpVisible(true);
+  const { SignId, SignUpVisible, setSignUpVisible } = useContext(LoginContext);
+  const idInput = useRef();
+  const passwordInput = useRef();
 
-  const clickSignIn = (event) => {
+  useEffect(() => {
+    idInput.current.value = SignId;
+    if("" === idInput.current.value.trim()){
+      idInput.current.focus();
+    } else {
+      passwordInput.current.focus();
+    }
+  }, [SignUpVisible])
+
+  const clickSignIn = useCallback((event) => {
     event.preventDefault();
 
-    const f_id = event.target.f_id.value;
-    const f_pwd = event.target.password.value;
+    const f_id = idInput.current.value.trim();
+    const f_pwd = passwordInput.current.value.trim();
 
-    if (f_id === "" || f_pwd === "") {
-      message.warning("빈 값이 존재합니다. 내용을 입력해주세요!");
-      if (f_id === "") {
-        event.target.f_id.focus();
-      } else if (f_pwd === "") {
-        event.target.password.focus();
-      } 
-      return;
+    if (f_id.length == 0) {
+      idInput.current.focus();
+      return message.warning("아이디가 빈값입니다!");
     }
 
-    signIn({
-      id: f_id,
-      password: f_pwd,
-    });
-  };
+    if (f_pwd.length == 0) {
+      passwordInput.current.focus();
+      return message.warning("패스워드가 빈값입니다!");
+    }
+
+    if (!SignHelper.regJson.ID.test(f_id)) {
+      idInput.current.focus();
+      return message.warning("아이디는 6자 이상의 소문자영문, 숫자!");
+    }
+
+    if (!SignHelper.regJson.PASSWORD.test(f_pwd)) {
+      passwordInput.current.focus();
+      return message.warning("패스워드는 8자 이상의 대소문자영문, 숫자, 특수기호!");
+    }
+
+    const signInValues = { id: f_id, password: f_pwd };
+    signIn(signInValues);
+  },[]);
 
   const signIn = (signUpData) => {
     axios.post("/api/recipe/signIn", signUpData).then((response) => {
       if (response.data.loginSuccess) {
-        console.log(props)
-        props.history.push('/');
+        props.history.push("/");
         message.success(response.data.loginMessage);
       } else {
         message.error(response.data.loginMessage);
@@ -48,7 +67,13 @@ function SignIn(props) {
     <div className="signin-section">
       <form id="signin-form" name="frmAgree" onSubmit={clickSignIn}>
         <div className="inp_initialization">
-          <input type="text" name="f_id" placeholder="아이디를 입력해주세요" />
+          <input
+            type="text"
+            name="f_id"
+            maxLength="30"
+            placeholder="아이디를 입력해주세요"
+            ref={idInput}
+          />
           <button type="button" className="btn_initialization">
             텍스트 삭제
           </button>
@@ -56,11 +81,10 @@ function SignIn(props) {
         <div className="inp_initialization">
           <input
             type="password"
-            name="password"
-            required="required"
-            msgr="비밀번호를 입력해주세요"
+            name="f_password"
+            maxLength="30"
             placeholder="비밀번호를 입력해주세요"
-            autoComplete="on"
+            ref={passwordInput}
           />
           <button type="button" className="btn_initialization">
             텍스트 삭제
@@ -74,7 +98,10 @@ function SignIn(props) {
         <button type="submit" className="btn_type1">
           <span className="txt_type">로그인</span>
         </button>
-        <div className="btn_type2 btn_member" onClick={showSignUpPage}>
+        <div
+          className="btn_type2 btn_member"
+          onClick={() => setSignUpVisible(true)}
+        >
           <span className="txt_type">회원가입</span>
         </div>
       </form>

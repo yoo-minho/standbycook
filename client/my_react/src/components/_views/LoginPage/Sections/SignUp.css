@@ -92,7 +92,8 @@
     text-indent: -9999px;
 }
 
-.signup-section .field_ID .desc {
+.signup-section .field_ID .desc,
+.signup-section .field_NICK .desc {
     position: relative;
     padding-right: 93px;
 }
@@ -125,7 +126,8 @@
     outline: none;
 }
 
-.signup-section .field_ID .btn {
+.signup-section .field_ID .btn,
+.signup-section .field_NICK .btn {
     position: absolute;
     right: 0;
     top: 0;
@@ -248,7 +250,8 @@
 
 .signup-section .field_ID .txt_guide .txt:before,
 .signup-section .field_PASSWORD .txt_guide .txt:before,
-.signup-section .field_PASSWORD2 .txt_guide .txt:before {
+.signup-section .field_PASSWORD2 .txt_guide .txt:before,
+.signup-section .field_NICK .txt_guide .txt:before {
     content: '\2022';
     display: inline-block;
     padding-right: 2px;

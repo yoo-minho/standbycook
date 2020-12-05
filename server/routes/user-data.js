@@ -5,6 +5,7 @@ const common = require("./module/common");
 const userData = (function () {
   return {
     isExistsIdYn,
+    isExistsNickYn,
     findPassword,
     findProfileData,
     findTokenData,
@@ -23,6 +24,27 @@ const userData = (function () {
         where: ["and id = $1", "limit 1"],
       });
       client.query(sql, [userId], (err, qres) => {
+        client.end();
+        if (err) {
+          resolve("N");
+        } else {
+          resolve(qres.rows[0] ? "Y" : "N");
+        }
+      });
+    });
+  }
+
+  function isExistsNickYn(userNick) {
+    return new Promise((resolve) => {
+      const client = new Client(config.postgresqlInfo);
+      client.connect();
+      const sql = common.json2query({
+        mode: "SELECT",
+        tableName: "user_data",
+        column: ["1"],
+        where: ["and name = $1", "limit 1"],
+      });
+      client.query(sql, [userNick], (err, qres) => {
         client.end();
         if (err) {
           resolve("N");
@@ -170,7 +192,7 @@ const userData = (function () {
       client.query(sql, [userId, name, password], (err, qres) => {
         client.end();
         if (err) {
-          resolve({ success: false, err, sql, values });
+          resolve({ success: false, err, sql });
         } else {
           resolve({ success: true, qres });
         }
