@@ -8,7 +8,7 @@ import { withRouter } from "react-router-dom";
 
 function MyPage(props) {
   const {
-    setAddPageVisible,
+    setEditPageVisible,
     setGroceryInputList,
     setRecipeStepInputList,
     setCurrentPageInRecipeStep,
@@ -60,7 +60,7 @@ function MyPage(props) {
     setCurrentPageInRecipeStep(0);
     setTotalPageInRecipeStep(0);
     setMyPageVisible(false);
-    setAddPageVisible(true);
+    setEditPageVisible(true);
   }
 
   return (

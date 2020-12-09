@@ -8,7 +8,7 @@ function RecipeStore(props) {
     const [RecipeListVisible, setRecipeListVisible] = useState(true);
     const [CartListVisible, setCartListVisible] = useState(false);
     const [CookListVisible, setCookListVisible] = useState(false);
-    const [AddPageVisible, setAddPageVisible] = useState(false);
+    const [EditPageVisible, setEditPageVisible] = useState(false);
     const [DetailPageVisible, setDetailPageVisible] = useState(false);
     const [RecipeStepConfirmVisible, setRecipeStepConfirmVisible] = useState(false);
     const [CartUpdateModalVisible, setCartUpdateModalVisible] = useState(false);
@@ -58,7 +58,7 @@ function RecipeStore(props) {
             RecipeListVisible, setRecipeListVisible,
             CartListVisible, setCartListVisible,
             CookListVisible, setCookListVisible,
-            AddPageVisible, setAddPageVisible,
+            EditPageVisible, setEditPageVisible,
             DetailPageVisible, setDetailPageVisible,
             RecipeDetailRecipeSrno, setRecipeDetailRecipeSrno,
             RecipeDetailData, setRecipeDetailData,

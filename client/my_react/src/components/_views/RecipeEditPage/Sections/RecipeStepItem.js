@@ -5,7 +5,7 @@ import RecipeStepItemTool from "./RecipeStepItemTool";
 import RecipeStepItemDrop from "./RecipeStepItemDrop";
 
 function RecipeStepItem(props) {
-  console.log("RecipeStepItem");
+  console.log("vvvvv", "RecipeStepItem");
 
   const field = props.field;
   const index = props.index;
@@ -31,30 +31,30 @@ function RecipeStepItem(props) {
           style={{ display: field.url ? "block" : "none" }}
         >
           <img src={field.url} className="recipe-image" alt="photo" />
-          <Form.Item hidden name={["step_url", index]}>
+          <div hidden className="step_url" index={index}>
             <Input />
-          </Form.Item>
+          </div>
           <div
             className="title-image"
             style={{ display: field.title_url_yn === "Y" ? "block" : "none" }}
           >
             대표
           </div>
-          <Form.Item hidden name={["step_title_yn", index]}>
+          <div className="step_title_yn" index={index}>
             <Input value="N" />
-          </Form.Item>
+          </div>
         </div>
         <RecipeStepItemDrop
           index={index}
           url={field.url}
           xref={recipeStepItemRef}
         />
-        <Form.Item name={["step_title", index]} className="mgb10">
+        <div className="step_title mgb10" index={index}>
           <Input className="wd100 mgb10" placeholder="한줄설명" />
-        </Form.Item>
-        <Form.Item name={["step_description", index]} className="mgb10">
+        </div>
+        <div className="mgb10 step_description" index={index}>
           <TextArea className="wd100" placeholder="상세설명" rows={4} />
-        </Form.Item>
+        </div>
       </div>
     </div>
   );
